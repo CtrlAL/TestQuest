@@ -2,7 +2,6 @@
 using SO;
 using System;
 using UniRx;
-using UnityEngine;
 using View;
 using Zenject;
 
@@ -37,10 +36,8 @@ namespace Presenters
                 })
                 .AddTo(_disposables);
 
-            Observable.EveryUpdate()
+            Observable.Interval(TimeSpan.FromSeconds(_settings.AutoCollectInterval))
                 .Where(_ => _view.IsActiveView && _settings.AutoClickEnabled)
-                .Select(_ => Time.time)
-                .DistinctUntilChanged(t => (int)(t / _settings.AutoCollectInterval))
                 .Subscribe(_ =>
                 {
                     _currency.Add(_settings.AutoCollectAmount);
@@ -70,4 +67,3 @@ namespace Presenters
         }
     }
 }
-
