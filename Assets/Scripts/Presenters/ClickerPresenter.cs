@@ -2,6 +2,7 @@
 using SO;
 using System;
 using UniRx;
+using UnityEngine;
 using View;
 using Zenject;
 
@@ -38,6 +39,7 @@ namespace Presenters
 
             Observable.Interval(TimeSpan.FromSeconds(_settings.AutoCollectInterval))
                 .Where(_ => _view.IsActiveView && _settings.AutoClickEnabled)
+                .Do(x => Debug.Log($"[AutoClick] Tick {x}"))
                 .Subscribe(_ =>
                 {
                     _currency.Add(_settings.AutoCollectAmount);
@@ -45,7 +47,8 @@ namespace Presenters
                 .AddTo(_disposables);
 
             Observable.Interval(TimeSpan.FromSeconds(_settings.EnergyRegenInterval))
-                .Where(_ => _view.IsActiveView)
+                .Do(x => Debug.Log($"[Regen] Tick {x}"))
+                .Where(_ => _view.IsActiveView && _energy.Count.Value < _settings.MaxEnergy)
                 .Subscribe(_ =>
                 {
                     _energy.Regenerate(_settings.EnergyRegenCount);
