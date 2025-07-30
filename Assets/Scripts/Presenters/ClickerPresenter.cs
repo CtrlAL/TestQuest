@@ -41,7 +41,6 @@ namespace Presenters
 
             Observable.Timer(TimeSpan.FromSeconds(_settings.AutoCollectInterval), TimeSpan.FromSeconds(_settings.AutoCollectInterval))
                 .Where(_ => _view.IsActiveView && _settings.AutoClickEnabled)
-                .Do(x => Debug.Log($"[AutoClick] Tick {x}"))
                 .Subscribe(_ =>
                 {
                     _currency.Add(_settings.AutoCollectAmount);
@@ -49,7 +48,6 @@ namespace Presenters
                 .AddTo(_disposables);
 
             Observable.Timer(TimeSpan.FromSeconds(_settings.EnergyRegenInterval), TimeSpan.FromSeconds(_settings.EnergyRegenInterval))
-                .Do(x => Debug.Log($"[Regen] Tick {x}"))
                 .Where(_ => _view.IsActiveView && _energy.Count.Value < _settings.MaxEnergy)
                 .Subscribe(_ =>
                 {
