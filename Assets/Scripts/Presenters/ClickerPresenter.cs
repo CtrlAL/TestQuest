@@ -52,6 +52,8 @@ namespace Presenters
                 .Subscribe(_ =>
                 {
                     _energy.Regenerate(_settings.EnergyRegenCount);
+                    _view.UpdateCurrencyText(_energy.Count.Value);
+                    _view.PlayFeedback();
                 })
                 .AddTo(_disposables);
 

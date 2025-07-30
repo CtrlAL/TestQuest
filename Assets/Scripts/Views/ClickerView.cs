@@ -48,7 +48,7 @@ namespace View
             _energyText.text = $"Energy: {amount}";
         }
 
-        private void PlayFeedback()
+        public void PlayFeedback()
         {
             if (_settings.ClickVFX != null)
             {
