@@ -53,7 +53,7 @@ namespace View
             if (_settings.ClickVFX != null)
             {
                 var vfx = Instantiate(_settings.ClickVFX, _clickButton.transform.position, Quaternion.identity);
-                Destroy(vfx.gameObject, 2f);
+                Destroy(vfx.gameObject, vfx.main.duration);
             }
 
             if (_settings.ClickSound != null && _audioSource != null)
