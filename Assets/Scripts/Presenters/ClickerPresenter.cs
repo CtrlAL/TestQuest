@@ -26,7 +26,11 @@ namespace Presenters
                 .Subscribe(value =>
                 {
                     _view.UpdateCurrencyText(value);
-                    _view.PlayFeedback();
+
+                    if (value > 0)
+                    {    
+                        _view.PlayFeedback();
+                    }
                 })
                 .AddTo(_disposables);
 
