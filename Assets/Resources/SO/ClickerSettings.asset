@@ -22,5 +22,5 @@ MonoBehaviour:
   _energyRegenInterval: 10
   _energyRegenCount: 10
   _clickSound: {fileID: 8300000, guid: 8da907225d980e94e9617463c0e69f16, type: 3}
-  _clickVFX: {fileID: 3666861477398967442, guid: e7ef8862d5aa4d740915dd0551ce9ee8, type: 3}
+  _clickVFX: {fileID: 5087731752378114806, guid: e7ef8862d5aa4d740915dd0551ce9ee8, type: 3}
   _feedbackDuration: 0.5
