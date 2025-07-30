@@ -34,6 +34,8 @@ namespace View
         {
             UpdateCurrencyText(_settings.StartingCurrency);
             UpdateEnergyText(_settings.MaxEnergy);
+
+            IsActiveView = true;
         }
 
         public void UpdateCurrencyText(int amount)
