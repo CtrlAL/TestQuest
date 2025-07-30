@@ -5,12 +5,13 @@ using UnityEngine.UI;
 
 namespace Views
 {
-    public class WeatherView : MonoBehaviour
+    public class WeatherView : BaseView
     {
         public readonly Subject<Unit> OnRefreshRequested = new();
-        public bool IsActiveView { get; set; }
 
         [SerializeField] private TMP_Text _statusText;
+        [SerializeField] private TMP_Text _forecastText;
+
         [SerializeField] private Button _refreshButton;
 
         private void Start()
@@ -25,8 +26,7 @@ namespace Views
 
         public void SetActive(bool isActive)
         {
-            IsActiveView = isActive;
-            gameObject.SetActive(isActive);
+            base.SetActive(isActive);
 
             if (isActive)
             {
@@ -41,6 +41,11 @@ namespace Views
         public void UpdateStatus(string message)
         {
             _statusText.text = message;
+        }
+
+        public void UpdateForecast(string forecast)
+        {
+            _forecastText.text = forecast;
         }
 
         private void OnDestroy()

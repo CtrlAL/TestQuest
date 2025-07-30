@@ -9,7 +9,7 @@ namespace Views
 
         public readonly Subject<bool> OnActiveStateChanged = new();
 
-        public void SetActive(bool isActive)
+        public virtual void SetActive(bool isActive)
         {
             if (IsActiveView == isActive) return;
 
