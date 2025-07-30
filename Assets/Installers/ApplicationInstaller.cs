@@ -10,6 +10,7 @@ namespace Installers
         {
             Container.Bind<ITabService>().To<TabService>().AsSingle();
             Container.Bind<IWeatherService>().To<WeatherService>().AsSingle();
+            Container.Bind<IDogApiService>().To<DogApiService>().AsSingle();
         }
     }
 }
