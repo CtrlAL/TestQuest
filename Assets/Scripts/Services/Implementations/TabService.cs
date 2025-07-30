@@ -1,5 +1,5 @@
 using Services.Interfaces;
-using View;
+using Views;
 using Zenject;
 
 namespace Services.Implementations

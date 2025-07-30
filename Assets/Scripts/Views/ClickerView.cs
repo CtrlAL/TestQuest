@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-namespace View
+namespace Views
 {
     [RequireComponent(typeof(AudioSource))]
     public class ClickerView : BaseView

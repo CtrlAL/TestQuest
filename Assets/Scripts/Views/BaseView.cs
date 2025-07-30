@@ -1,7 +1,7 @@
 using UniRx;
 using UnityEngine;
 
-namespace View
+namespace Views
 {
     public class BaseView : MonoBehaviour
     {

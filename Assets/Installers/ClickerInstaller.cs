@@ -2,7 +2,7 @@ using Models;
 using Presenters;
 using SO;
 using UnityEngine;
-using View;
+using Views;
 using Zenject;
 
 namespace Installers
