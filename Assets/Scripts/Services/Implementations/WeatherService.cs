@@ -1,30 +1,42 @@
 using Cysharp.Threading.Tasks;
 using Services.Interfaces;
 using SO;
-using System.Net.Http;
 using System.Threading;
+using UnityEngine.Networking;
 
 namespace Services.Implementations
 {
     public class WeatherService : IWeatherService
     {
         private readonly WeatherSettingsSO _settings;
-        private readonly HttpClient _httpClient;
 
         public WeatherService(WeatherSettingsSO settings)
         {
             _settings = settings;
-            _httpClient = new HttpClient();
         }
 
         public async UniTask<string> FetchForecastAsync(CancellationToken ct)
         {
-            return await _httpClient.GetStringAsync(_settings.WeatherUrl);
-        }
+            using (var request = UnityWebRequest.Get(_settings.WeatherUrl))
+            {
+                var operation = request.SendWebRequest();
 
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
+                while (!operation.isDone)
+                {
+                    ct.ThrowIfCancellationRequested();
+                    await UniTask.Yield();
+                }
+
+                ct.ThrowIfCancellationRequested();
+
+                if (request.result == UnityWebRequest.Result.ConnectionError || 
+                    request.result == UnityWebRequest.Result.ProtocolError)
+                {
+                    throw new System.Exception($"Request failed: {request.error} (HTTP {request.responseCode})");
+                }
+
+                return request.downloadHandler.text;
+            }
         }
     }
 }
