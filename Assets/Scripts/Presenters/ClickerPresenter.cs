@@ -19,7 +19,9 @@ namespace Presenters
 
         public void Initialize()
         {
-            
+            _currency.Initialize();
+            _energy.Initialize();
+
             _currency.Amount
                 .Subscribe(_view.UpdateCurrencyText)
                 .AddTo(_disposables);
@@ -55,8 +57,6 @@ namespace Presenters
                 })
                 .AddTo(_disposables);
 
-            _currency.Initialize();
-            _energy.Initialize();
             _view.Initialize();
         }
 
