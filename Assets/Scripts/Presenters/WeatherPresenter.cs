@@ -21,7 +21,7 @@ public class WeatherPresenter : IInitializable, IDisposable
     public void Initialize()
     {
         _view.OnRefreshRequested
-            .Subscribe(_ => RefreshWeather())
+            .Subscribe(async _ => await RefreshWeather())
             .AddTo(_disposables);
 
         _view.OnActiveStateChanged
@@ -95,14 +95,14 @@ public class WeatherPresenter : IInitializable, IDisposable
             _model.Forecast = forecast;
             _model.LastUpdated = System.DateTime.Now;
 
-            _view.UpdateStatus($"✅ Обновлено: {_model.LastUpdated:HH:mm:ss}");
+            _view.UpdateStatus($"Обновлено: {_model.LastUpdated:HH:mm:ss}");
             _view.UpdateForecast(forecast);
         }
         catch (System.Exception e)
         {
             if (!(_cts?.IsCancellationRequested ?? true))
             {
-                _view.UpdateStatus($"❌ Ошибка: {e.Message}");
+                _view.UpdateStatus($"Ошибка: {e.Message}");
             }
         }
     }
@@ -111,6 +111,5 @@ public class WeatherPresenter : IInitializable, IDisposable
     {
         StopAutoUpdate();
         _disposables?.Dispose();
-        _weatherService?.Dispose();
     }
 }
