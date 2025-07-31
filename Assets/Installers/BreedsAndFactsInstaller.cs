@@ -1,5 +1,4 @@
 using Presenters;
-using Services.Implementations;
 using UnityEngine;
 using Views;
 using Zenject;
@@ -19,7 +18,6 @@ namespace Installers
                      .FromComponentInNewPrefab(_breedItemPrefab)
                      .AsCached();
 
-            Container.Bind<DogApiService>().AsSingle();
             Container.BindInterfacesAndSelfTo<BreedsPresenter>()
                      .AsSingle()
                      .NonLazy();
