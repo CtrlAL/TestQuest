@@ -1,5 +1,4 @@
 using Services.Interfaces;
-using UnityEngine;
 using Views;
 using Zenject;
 
@@ -8,14 +7,14 @@ namespace Services.Implementations
     public class TabService : IInitializable, ITickable, ITabService
     {
         private readonly ClickerView _clickerView;
-        private readonly BaseView _watherForecast;
-        private readonly BaseView _breedsAndFacts;
+        private readonly WeatherView _watherForecast;
+        private readonly BreedsView _breedsAndFacts;
 
         private Tab _currentTab;
 
         public Tab CurrentTab => _currentTab;
 
-        public TabService(ClickerView clickerView, BaseView watherForecast, BaseView breedsAndFacts)
+        public TabService(ClickerView clickerView, WeatherView watherForecast, BreedsView breedsAndFacts)
         {
             _clickerView = clickerView;
             _watherForecast = watherForecast;

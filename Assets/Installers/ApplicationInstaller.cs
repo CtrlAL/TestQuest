@@ -9,6 +9,7 @@ namespace Installers
         public override void InstallBindings()
         {
             Container.Bind<ITabService>().To<TabService>().AsSingle();
+            Container.Bind<MainView>().FromComponentInHierarchy().AsSingle();
         }
     }
 }
