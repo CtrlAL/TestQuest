@@ -42,7 +42,7 @@ namespace Services.Implementations
 
                 var responseText = request.downloadHandler.text;
                 var periods = JsonConvert.DeserializeObject<WeatherPeriodsResponse>(responseText);
-                var period = periods.Properties.Periods.Where(x => x.Name == "Today").FirstOrDefault();
+                var period = periods.Properties.Periods.RandomItem();
 
                 var text = period != null ? $"{period.Name} - {period.Temperature} {period.TemperatureUnit}" : "Прогноз на сегодня не найден";
                 var icon = await LoadIconAsync(period.Icon);
