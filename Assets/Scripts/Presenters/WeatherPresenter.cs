@@ -73,8 +73,8 @@ public class WeatherPresenter : IInitializable, IDisposable
 
                 await RefreshWeather();
             }
-            catch (System.OperationCanceledException) { }
-            catch (System.Exception e)
+            catch (OperationCanceledException) { }
+            catch (Exception e)
             {
                 if (!ct.IsCancellationRequested)
                 {
