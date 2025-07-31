@@ -5,7 +5,11 @@ namespace Views
 {
     public class BaseView : MonoBehaviour
     {
-        public bool IsActiveView { get; set; }
+        public bool IsActiveView 
+        { 
+            get { return gameObject.activeSelf; } 
+            set { gameObject.SetActive(value); } 
+        }
 
         public readonly Subject<bool> OnActiveStateChanged = new();
 
@@ -13,11 +17,9 @@ namespace Views
         {
             if (IsActiveView == isActive) return;
 
-            IsActiveView = isActive;
-            OnActiveStateChanged.OnNext(isActive);
-
-            gameObject.SetActive(isActive);
-        }
+			IsActiveView = isActive;
+			OnActiveStateChanged.OnNext(isActive);
+		}
     }
 }
 
