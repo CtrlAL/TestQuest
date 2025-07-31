@@ -1,8 +1,9 @@
 using Cysharp.Threading.Tasks;
 using Models;
+using Newtonsoft.Json;
+using ResponseModels;
 using Services.Interfaces;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Services.Implementations
@@ -29,7 +30,7 @@ namespace Services.Implementations
             if (request.result != UnityWebRequest.Result.Success)
                 throw new System.Exception($"Ошибка: {request.error}");
 
-            var response = JsonUtility.FromJson<BreedsResponse>(request.downloadHandler.text);
+            var response = JsonConvert.DeserializeObject<BreedsResponse>(request.downloadHandler.text);
             return response.Data;
         }
 
@@ -51,7 +52,7 @@ namespace Services.Implementations
             if (request.result != UnityWebRequest.Result.Success)
                 throw new System.Exception($"Ошибка: {request.error}");
 
-            var response = JsonUtility.FromJson<BreedDetailResponse>(request.downloadHandler.text);
+            var response = JsonConvert.DeserializeObject<BreedDetailResponse>(request.downloadHandler.text);
             var data = response.Data;
 
             return new BreedDetailsModel
@@ -61,33 +62,6 @@ namespace Services.Implementations
                 Fact = data.Attributes.Fact ?? "Нет факта",
                 ImageUrl = data.Attributes.Image ?? ""
             };
-        }
-
-        [System.Serializable]
-        private class BreedsResponse
-        {
-            public List<BreedModel> Data;
-        }
-
-        [System.Serializable]
-        private class BreedDetailResponse
-        {
-            public BreedDetailData Data;
-        }
-
-        [System.Serializable]
-        private class BreedDetailData
-        {
-            public int Id;
-            public Attributes Attributes;
-        }
-
-        [System.Serializable]
-        private class Attributes
-        {
-            public string Name;
-            public string Fact;
-            public string Image;
         }
     }
 }
