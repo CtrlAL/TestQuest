@@ -1,4 +1,6 @@
 using Models;
+using Services.Implementations;
+using Services.Interfaces;
 using SO;
 using UnityEngine;
 using Views;
@@ -17,7 +19,9 @@ namespace Installers
 
             Container.Bind<WeatherModel>().AsSingle();
 
-            Container.BindInterfacesAndSelfTo<WeatherPresenter>()
+			Container.Bind<IWeatherService>().To<WeatherService>().AsSingle();
+
+			Container.BindInterfacesAndSelfTo<WeatherPresenter>()
                      .AsSingle()
                      .NonLazy();
         }

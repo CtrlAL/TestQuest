@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using Services.Implementations;
+using Services.Interfaces;
 using System;
 using System.Threading;
 using UniRx;
@@ -11,7 +12,7 @@ namespace Presenters
 {
     public class BreedsPresenter : IInitializable, IDisposable
     {
-        [Inject] private DogApiService _apiService;
+        [Inject] private IDogApiService _apiService;
         [Inject] private BreedsView _view;
 
         private readonly CompositeDisposable _disposables = new();

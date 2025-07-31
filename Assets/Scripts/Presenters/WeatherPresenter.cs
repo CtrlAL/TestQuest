@@ -1,16 +1,16 @@
 ﻿using Cysharp.Threading.Tasks;
 using Models;
-using Services.Implementations;
 using SO;
 using System.Threading;
 using System;
 using UniRx;
 using Views;
 using Zenject;
+using Services.Interfaces;
 
 public class WeatherPresenter : IInitializable, IDisposable
 {
-    [Inject] private WeatherService _weatherService;
+    [Inject] private IWeatherService _weatherService;
     [Inject] private WeatherView _view;
     [Inject] private WeatherSettingsSO _settings;
 
