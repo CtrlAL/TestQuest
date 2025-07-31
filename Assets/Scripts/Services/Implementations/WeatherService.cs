@@ -35,7 +35,9 @@ namespace Services.Implementations
                     throw new System.Exception($"Request failed: {request.error} (HTTP {request.responseCode})");
                 }
 
-                return request.downloadHandler.text;
+                var responseText = request.downloadHandler.text;
+
+                return responseText;
             }
         }
     }
