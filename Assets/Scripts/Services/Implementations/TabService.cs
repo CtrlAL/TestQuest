@@ -1,4 +1,5 @@
 using Services.Interfaces;
+using UnityEngine;
 using Views;
 using Zenject;
 
@@ -12,6 +13,8 @@ namespace Services.Implementations
 
         private Tab _currentTab;
 
+        public Tab CurrentTab => _currentTab;
+
         public TabService(ClickerView clickerView, BaseView watherForecast, BaseView breedsAndFacts)
         {
             _clickerView = clickerView;
@@ -21,7 +24,6 @@ namespace Services.Implementations
 
         public void Initialize()
         {
-            SwitchToTab(Tab.Clicker);
         }
 
         public void Tick()
