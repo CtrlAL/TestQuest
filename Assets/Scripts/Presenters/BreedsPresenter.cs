@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Services.Implementations;
 using Services.Interfaces;
 using System;
 using System.Threading;
@@ -60,11 +59,11 @@ namespace Presenters
                     _view.PopulateBreeds(breeds);
                 }
             }
-            catch (System.OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 Debug.Log("Загрузка списка пород отменена.");
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 if (!(_breedsCts?.IsCancellationRequested ?? true))
                 {
@@ -90,11 +89,11 @@ namespace Presenters
                     Debug.Log($"Получены данные о породе {breedId}: {details.Fact}");
                 }
             }
-            catch (System.OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 Debug.Log($"Запрос о породе {breedId} отменён.");
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 if (!(_detailsCts?.IsCancellationRequested ?? true))
                 {

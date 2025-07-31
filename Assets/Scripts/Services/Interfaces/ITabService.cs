@@ -2,7 +2,7 @@ namespace Services.Interfaces
 {
     public interface ITabService
     {
-        public Tab CurrentTub => CurrentTub;
+        public Tab CurrentTub { get; }
         public void SwitchToTab(Tab tab);
     }
 

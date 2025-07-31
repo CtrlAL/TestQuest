@@ -11,10 +11,9 @@ namespace Services.Implementations
         private readonly BreedsView _breedsAndFacts;
 
         private Tab _currentTab;
+		public Tab CurrentTub => _currentTab;
 
-        public Tab CurrentTab => _currentTab;
-
-        public TabService(ClickerView clickerView, WeatherView watherForecast, BreedsView breedsAndFacts)
+		public TabService(ClickerView clickerView, WeatherView watherForecast, BreedsView breedsAndFacts)
         {
             _clickerView = clickerView;
             _watherForecast = watherForecast;
