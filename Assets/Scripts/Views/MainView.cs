@@ -14,8 +14,7 @@ public class MainView : MonoBehaviour
 
 		_switchButton.onClick.AddListener(() =>
 		{
-			var number = ((int)_tabService.CurrentTub + 1) % 3;
-			_tabService.SwitchToTab((Tab)number);
+			_tabService.MoveNext();
 		});
 	}
 }

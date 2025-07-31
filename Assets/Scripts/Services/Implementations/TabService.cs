@@ -1,4 +1,5 @@
 using Services.Interfaces;
+using System;
 using Views;
 using Zenject;
 
@@ -11,6 +12,8 @@ namespace Services.Implementations
         private readonly BreedsView _breedsAndFacts;
 
         private Tab _currentTab;
+		public static int Count => Enum.GetValues(typeof(Tab)).Length;
+
 		public Tab CurrentTub => _currentTab;
 
 		public TabService(ClickerView clickerView, WeatherView watherForecast, BreedsView breedsAndFacts)
@@ -71,6 +74,18 @@ namespace Services.Implementations
         }
 
         public Tab GetCurrentTab() => _currentTab;
-    }
+
+		public void MoveNext()
+		{
+			var next = ((int)_currentTab + 1) % Count;
+			SwitchToTab((Tab)next);
+		}
+
+		public void MoveBack()
+		{
+			var prev = ((int)_currentTab - 1 + Count) % Count;
+			SwitchToTab((Tab)prev);
+		}
+	}
 }
 
