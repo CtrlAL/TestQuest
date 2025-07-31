@@ -42,10 +42,10 @@ namespace Services.Implementations
 
                 var responseText = request.downloadHandler.text;
                 var periods = JsonConvert.DeserializeObject<WeatherPeriodsResponse>(responseText);
-                var resultText = periods.Properties.Periods.Where(x => x.Name == "Today").FirstOrDefault();
+                var period = periods.Properties.Periods.Where(x => x.Name == "Today").FirstOrDefault();
 
-                var text = resultText != null ? $"{resultText.Name} - {resultText.Temperature} {resultText.TemperatureUnit}" : "Прогноз на сегодня не найден";
-                var icon = await LoadIconAsync(resultText.Icon);
+                var text = period != null ? $"{period.Name} - {period.Temperature} {period.TemperatureUnit}" : "Прогноз на сегодня не найден";
+                var icon = await LoadIconAsync(period.Icon);
 
                 return new WeatherRequestData
                 {
