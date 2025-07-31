@@ -9,7 +9,8 @@ namespace Views
     {
         public readonly Subject<Unit> OnRefreshRequested = new();
 
-        [SerializeField] private TMP_Text _statusText;
+		[SerializeField] private Image _weatherIcon;
+		[SerializeField] private TMP_Text _statusText;
         [SerializeField] private TMP_Text _forecastText;
 
         [SerializeField] private Button _refreshButton;
@@ -43,7 +44,12 @@ namespace Views
             _statusText.text = message;
         }
 
-        public void UpdateForecast(string forecast)
+		public void UpdateIcon(Sprite sprite)
+		{
+			_weatherIcon.sprite = sprite;
+		}
+
+		public void UpdateForecast(string forecast)
         {
             _forecastText.text = forecast;
         }

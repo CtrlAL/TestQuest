@@ -1,10 +1,11 @@
 using Cysharp.Threading.Tasks;
+using Models;
 using System.Threading;
 
 namespace Services.Interfaces
 {
     public interface IWeatherService
     {
-        public UniTask<string> FetchForecastAsync(CancellationToken ct);
+        public UniTask<WeatherRequestData> FetchForecastAsync(CancellationToken ct);
     }
 }

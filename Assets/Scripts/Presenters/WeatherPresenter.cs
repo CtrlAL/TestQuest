@@ -90,15 +90,16 @@ public class WeatherPresenter : IInitializable, IDisposable
         {
             _view.UpdateStatus("Загрузка...");
 
-            string forecast = await _weatherService.FetchForecastAsync(_cts?.Token ?? default);
+            var weatherRequestData = await _weatherService.FetchForecastAsync(_cts?.Token ?? default);
 
-            _model.Forecast = forecast;
-            _model.LastUpdated = System.DateTime.Now;
+            _model.Forecast = weatherRequestData.Forecast;
+            _model.LastUpdated = DateTime.Now;
 
             _view.UpdateStatus($"Обновлено: {_model.LastUpdated:HH:mm:ss}");
-            _view.UpdateForecast(forecast);
+            _view.UpdateForecast(weatherRequestData.Forecast);
+            _view.UpdateIcon(weatherRequestData.Icon);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             if (!(_cts?.IsCancellationRequested ?? true))
             {
