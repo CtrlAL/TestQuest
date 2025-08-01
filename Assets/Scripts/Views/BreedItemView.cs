@@ -17,7 +17,7 @@ namespace Views
 
         public void SetData(int number, string name)
         {
-            _numberText.text = $"{number} -";
+            _numberText.text = $"{number}";
             _nameText.text = name;
             _button.onClick.AddListener(() => OnClicked.OnNext(Unit.Default));
         }
