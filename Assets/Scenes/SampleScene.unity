@@ -565,7 +565,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _settings: {fileID: 11400000, guid: ddfe9d80ab388174abca89ad31c141fc, type: 2}
   _view: {fileID: 641726834}
-  _coinPrefub: {fileID: 100000, guid: f8f0448f448097d43b694f03f5f5b56f, type: 3}
+  _coinPrefub: {fileID: 2996954545510234790, guid: e1294fbb950471c46aa4d4c30de7e1c4, type: 3}
+  _canvas: {fileID: 1404742987}
 --- !u!4 &235221400
 Transform:
   m_ObjectHideFlags: 0
@@ -4266,12 +4267,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
+  m_fontSize: 89.5
   m_fontSizeBase: 100
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 50
+  m_fontSizeMax: 100
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

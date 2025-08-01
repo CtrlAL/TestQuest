@@ -16,15 +16,15 @@ namespace Installers
 
         public override void InstallBindings()
         {
+            Container.BindMemoryPool<CurrencyPopup, CurrencyPopup.Pool>()
+            .FromComponentInNewPrefab(_coinPrefub)
+            .UnderTransform(_canvas.transform);
+
             Container.BindInstance(_settings).AsSingle();
             Container.BindInstance(_view).AsSingle();
 
             Container.Bind<CurrencyModel>().AsSingle();
             Container.Bind<EnergyModel>().AsSingle();
-
-            Container.BindMemoryPool<CurrencyPopup, CurrencyPopup.Pool>()
-            .FromComponentInNewPrefab(_coinPrefub)
-            .UnderTransform(_canvas.transform);
 
             Container.BindInterfacesAndSelfTo<ClickerPresenter>()
                      .AsSingle()

@@ -18,7 +18,7 @@ namespace Views
         [SerializeField] private AudioSource _audioSource;
         [SerializeField] private Canvas _canvas;
 
-        [Inject] private MemoryPool<CurrencyPopup> _flyItemPool;
+        [Inject] private CurrencyPopup.Pool _flyItemPool;
         [Inject] private ClickerSettings _settings;
 
         public readonly Subject<Unit> OnButtonClick = new();
@@ -50,7 +50,7 @@ namespace Views
 
         public void UpdateEnergyText(int amount)
         {
-            _energyText.text = $"Energy: {amount}";
+            _energyText.text = $"{amount}";
         }
 
         public void PlayFeedback()
