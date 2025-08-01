@@ -73,6 +73,7 @@ namespace Views
             Vector2 to = GetCanvasCenter(_coinImageUI.GetComponent<RectTransform>());
 
             CurrencyPopup flyItem = _flyItemPool.Spawn();
+            flyItem.gameObject.SetActive(true);
             RectTransform rect = flyItem.GetComponent<RectTransform>();
 
             rect.anchoredPosition = from;
@@ -102,6 +103,7 @@ namespace Views
                 await UniTask.Yield(PlayerLoopTiming.Update);
             }
 
+            flyItem.gameObject.SetActive(false);
             _flyItemPool.Despawn(flyItem);
         }
 
