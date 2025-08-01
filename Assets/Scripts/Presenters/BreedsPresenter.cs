@@ -13,6 +13,7 @@ namespace Presenters
     {
         [Inject] private IDogApiService _apiService;
         [Inject] private BreedsView _view;
+        [Inject] private BreedPopupView _popUpView;
 
         private readonly CompositeDisposable _disposables = new();
 
@@ -73,31 +74,36 @@ namespace Presenters
             }
         }
 
-        private async void OnBreedSelected(Guid breedId)
+        private async void OnBreedSelected((Guid breedId, BreedItemView itemView) args)
         {
             _detailsCts?.Cancel();
             _detailsCts = new CancellationTokenSource();
+            args.itemView.ShowLoader();
 
-            Debug.Log($"Запрос данных о породе: {breedId}");
+            Debug.Log($"Запрос данных о породе: {args.breedId}");
 
             try
             {
-                var details = await _apiService.GetBreedByIdAsync(breedId, _detailsCts.Token);
+                var details = await _apiService.GetBreedByIdAsync(args.breedId, _detailsCts.Token);
 
                 if (!_detailsCts.IsCancellationRequested)
                 {
-                    Debug.Log($"Получены данные о породе {breedId}: {details.Fact}");
+                    Debug.Log($"Получены данные о породе {args.breedId}: {details.Fact}");
+
+                    args.itemView.HideLoader();
+                    _popUpView.SetContent(details);
+                    _popUpView.Show();
                 }
             }
             catch (OperationCanceledException)
             {
-                Debug.Log($"Запрос о породе {breedId} отменён.");
+                Debug.Log($"Запрос о породе {args.breedId} отменён.");
             }
             catch (Exception e)
             {
                 if (!(_detailsCts?.IsCancellationRequested ?? true))
                 {
-                    Debug.LogError($"Ошибка загрузки породы {breedId}: " + e.Message);
+                    Debug.LogError($"Ошибка загрузки породы {args.breedId}: " + e.Message);
                 }
             }
         }

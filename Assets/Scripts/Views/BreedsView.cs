@@ -12,7 +12,7 @@ namespace Views
         [SerializeField] private Transform _listContainer;
         [SerializeField] private GameObject _breedItemPrefab;
 
-        public readonly Subject<Guid> OnBreedSelected = new();
+        public readonly Subject<(Guid, BreedItemView)> OnBreedSelected = new();
         private readonly List<GameObject> _spawnedItems = new();
 
         public void ShowLoader()
@@ -30,12 +30,13 @@ namespace Views
         {
             HideList();
 
-            for (int i = 0; i < breeds.Count; i++)
+            int number = 1;
+            foreach (var breed in breeds)
             {
                 var itemGO = Instantiate(_breedItemPrefab, _listContainer);
                 var itemView = itemGO.GetComponent<BreedItemView>();
-                itemView.SetData(i + 1, breeds[i].Name);
-                itemView.OnClicked.Subscribe(_ => OnBreedSelected.OnNext(breeds[i].Id)).AddTo(itemGO);
+                itemView.SetData(number++, breed.Name);
+                itemView.OnClicked.Subscribe(_ => OnBreedSelected.OnNext((breed.Id, itemView))).AddTo(itemGO);
                 _spawnedItems.Add(itemGO);
             }
         }

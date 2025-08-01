@@ -24,10 +24,6 @@ namespace Installers
 
 			Container.Bind<IDogApiService>().To<DogApiService>().AsSingle();
 
-            Container.BindInterfacesAndSelfTo<BreedPopupPresenter>()
-                     .AsSingle()
-                     .NonLazy();
-
             Container.BindInterfacesAndSelfTo<BreedsPresenter>()
                      .AsSingle()
                      .NonLazy();

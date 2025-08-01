@@ -1,6 +1,7 @@
 using Models;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Views
 {
@@ -8,6 +9,12 @@ namespace Views
     {
         [SerializeField] private TMP_Text _title;
         [SerializeField] private TMP_Text _fact;
+        [SerializeField] private Button _closeButton;
+
+        public void Start()
+        {
+            _closeButton.onClick.AddListener(() => Hide());
+        }
 
         public void Show()
         {
