@@ -73,7 +73,7 @@ namespace Presenters
             }
         }
 
-        private async void OnBreedSelected(int breedId)
+        private async void OnBreedSelected(Guid breedId)
         {
             _detailsCts?.Cancel();
             _detailsCts = new CancellationTokenSource();

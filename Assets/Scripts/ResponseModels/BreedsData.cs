@@ -1,5 +1,5 @@
-using Models;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace ResponseModels
@@ -7,32 +7,29 @@ namespace ResponseModels
 	public class BreedsResponse
 	{
 		[JsonProperty("data")]
-		public List<BreedModel> Data;
+		public List<BreedDetailData> Data { get; set; }
 	}
 
 	public class BreedDetailResponse
 	{
 		[JsonProperty("data")]
-		public BreedDetailData Data;
-	}
+		public BreedDetailData Data { get; set; }
+    }
 
 	public class BreedDetailData
 	{
 		[JsonProperty("id")]
-		public int Id;
+		public Guid Id;
 		[JsonProperty("attributes")]
-		public Attributes Attributes;
-	}
+		public Attributes Attributes { get; set; }
+    }
 
 	public class Attributes
 	{
 		[JsonProperty("name")]
-		public string Name;
+		public string Name { get; set; }
 
-		[JsonProperty("fact")]
-		public string Fact;
-
-		[JsonProperty("iamge")]
-		public string Image;
-	}
+        [JsonProperty("description")]
+		public string Fact { get; set; }
+    }
 }

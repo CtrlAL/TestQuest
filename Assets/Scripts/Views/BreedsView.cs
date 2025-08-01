@@ -1,4 +1,5 @@
 using Models;
+using System;
 using System.Collections.Generic;
 using UniRx;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Views
         [SerializeField] private Transform _listContainer;
         [SerializeField] private GameObject _breedItemPrefab;
 
-        public readonly Subject<int> OnBreedSelected = new();
+        public readonly Subject<Guid> OnBreedSelected = new();
         private readonly List<GameObject> _spawnedItems = new();
 
         public bool IsActiveView { get; private set; }
