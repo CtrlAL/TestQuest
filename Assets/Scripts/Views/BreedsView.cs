@@ -15,8 +15,6 @@ namespace Views
         public readonly Subject<Guid> OnBreedSelected = new();
         private readonly List<GameObject> _spawnedItems = new();
 
-        public bool IsActiveView { get; private set; }
-
         public void ShowLoader()
         {
             _loader.SetActive(true);

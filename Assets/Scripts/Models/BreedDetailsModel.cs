@@ -7,6 +7,5 @@ namespace Models
         public Guid Id;
         public string Name;
         public string Fact;
-        public string ImageUrl;
     }
 }

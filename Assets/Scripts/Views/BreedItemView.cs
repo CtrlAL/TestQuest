@@ -11,6 +11,7 @@ namespace Views
         [SerializeField] private TMP_Text _numberText;
         [SerializeField] private TMP_Text _nameText;
         [SerializeField] private Button _button;
+        [SerializeField] private GameObject _loader;
 
         public readonly Subject<Unit> OnClicked = new();
 
@@ -19,6 +20,16 @@ namespace Views
             _numberText.text = $"{number} -";
             _nameText.text = name;
             _button.onClick.AddListener(() => OnClicked.OnNext(Unit.Default));
+        }
+
+        public void ShowLoader()
+        {
+            _loader.SetActive(true);
+        }
+
+        public void HideLoader()
+        {
+            _loader.SetActive(false);
         }
 
         private void OnDestroy()

@@ -10,11 +10,13 @@ namespace Installers
     public class BreedsAndFactsInstaller : MonoInstaller
     {
         [SerializeField] private BreedsView _view;
+        [SerializeField] private BreedPopupView _popUpView;
         [SerializeField] private GameObject _breedItemPrefab;
 
         public override void InstallBindings()
         {
             Container.BindInstance(_view).AsSingle();
+            Container.BindInstance(_popUpView).AsSingle();
 
             Container.BindFactory<BreedItemView, BreedItemView.BreedItemViewFactory>()
                      .FromComponentInNewPrefab(_breedItemPrefab)
@@ -22,7 +24,11 @@ namespace Installers
 
 			Container.Bind<IDogApiService>().To<DogApiService>().AsSingle();
 
-			Container.BindInterfacesAndSelfTo<BreedsPresenter>()
+            Container.BindInterfacesAndSelfTo<BreedPopupPresenter>()
+                     .AsSingle()
+                     .NonLazy();
+
+            Container.BindInterfacesAndSelfTo<BreedsPresenter>()
                      .AsSingle()
                      .NonLazy();
         }
