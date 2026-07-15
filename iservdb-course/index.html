@@ -1,0 +1,1017 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISERVDB — как работает биллинг ЖКХ</title>
+
+  <!-- Google Fonts: Bricolage Grotesque · DM Sans · JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <!--
+    CUSTOMIZE PER COURSE — change only the three accent variables below.
+    Options:
+      vermillion  #D94F30 / #C4432A / #FDEEE9 / #E8836C  (default)
+      coral       #E06B56 / #C85A47 / #FDECEA / #E89585
+      teal        #2A7B9B / #1F6280 / #E4F2F7 / #5A9DB8
+      amber       #D4A843 / #BF9530 / #FDF5E0 / #E0C070
+      forest      #2D8B55 / #226B41 / #E8F5EE / #5AAD7A
+  -->
+  <style>
+    :root {
+      --color-accent:       #2A7B9B;
+      --color-accent-hover: #1F6280;
+      --color-accent-light: #E4F2F7;
+      --color-accent-muted: #5A9DB8;
+    }
+  </style>
+
+  <script src="main.js" defer></script>
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="nav-inner">
+      <span class="nav-title">ISERVDB — биллинг ЖКХ</span>
+      <div class="nav-dots" id="nav-dots" role="tablist">
+        <button class="nav-dot" data-target="module-1" data-tooltip="Что это за проект" role="tab" aria-label="Module 1: Что это за проект"></button>
+        <button class="nav-dot" data-target="module-2" data-tooltip="Кто здесь живёт" role="tab" aria-label="Module 2: Кто здесь живёт"></button>
+        <button class="nav-dot" data-target="module-3" data-tooltip="Как детали общаются" role="tab" aria-label="Module 3: Как детали общаются"></button>
+        <button class="nav-dot" data-target="module-4" data-tooltip="Junior: отчёты" role="tab" aria-label="Module 4: Junior-функции"></button>
+        <button class="nav-dot" data-target="module-5" data-tooltip="Middle: платежи" role="tab" aria-label="Module 5: Middle-функция"></button>
+        <button class="nav-dot" data-target="module-6" data-tooltip="Когда ломается" role="tab" aria-label="Module 6: Когда ломается"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <!-- modules/*.html content is assembled here by build.sh -->
+
+<section class="module" id="module-1" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">01</span>
+      <h1 class="module-title">Что это за проект</h1>
+      <p class="module-subtitle">ISERVDB — это «бухгалтерия» коммунальной службы, написанная на SQL</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Представь себе расчётный отдел ЖКХ</h2>
+        <p>Перед тобой — <span class="term" data-definition="База данных — это аккуратное цифровое хранилище информации, как огромный шкаф с папками, где каждая папка лежит на своём месте и до неё легко добраться.">база данных</span> под названием <strong>ISERVDB</strong>. В ней живёт учёт одной коммунальной службы: кто сколько должен за свет и воду, кто заплатил, какие счётчики стоят у людей дома.</p>
+        <p>Это не приложение с кнопками, которые ты нажимаешь. Это «мозг» такого приложения — набор правил на языке <span class="term" data-definition="SQL (читается «сиквел») — язык запросов к базе данных. С его помощью ты просишь базу: «покажи», «посчитай», «сохрани». Как разговор с очень дотошным библиотекарем.">SQL</span>, который умеет отвечать на вопросы вроде «сколько Иванов должен на 1 марта?».</p>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Зачем тебе это знать</strong>
+            <p>Ты можешь попросить ИИ написать такой «мозг» для своего проекта. Чтобы он сделал это хорошо, ты должен понимать, из каких частей тот состоит и зачем каждая нужна.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Что умеет этот «расчётный отдел»</h2>
+        <p>Задание для разработчика звучало так: написать набор <span class="term" data-definition="Функция в базе данных — это сохранённый вопрос с параметрами. Ты даёшь ей входные данные (например, номер клиента), а она возвращает готовый ответ. Как заранее записанный рецепт.">функций</span>, которые отвечают на типичные вопросы диспетчера ЖКХ:</p>
+        <div class="pattern-cards">
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+            <div class="pattern-icon" style="background: var(--color-actor-1)">📊</div>
+            <h4 class="pattern-title">Долги по срокам</h4>
+            <p class="pattern-desc">Сколько клиент должен «свеженького» (до 30 дней) и сколько уже просрочено на месяцы.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+            <div class="pattern-icon" style="background: var(--color-actor-2)">📅</div>
+            <h4 class="pattern-title">Долги по месяцам</h4>
+            <p class="pattern-desc">Сводка начислений и долгов за выбранный год, с детализацией или без.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+            <div class="pattern-icon" style="background: var(--color-actor-3)">📋</div>
+            <h4 class="pattern-title">Документы и дела</h4>
+            <p class="pattern-desc">Какие «мероприятия» (звонки, иски) открыты по документу и всей его цепочке.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-4)">
+            <div class="pattern-icon" style="background: var(--color-actor-4)">⚡</div>
+            <h4 class="pattern-title">Расход по счётчикам</h4>
+            <p class="pattern-desc">Сколько электричества накрутил счётчик и на какую сумму это выльется.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Что происходит, когда ты «нажимаешь кнопку»</h2>
+        <p>В реальном приложении ты бы выбрал клиента и дату и нажал «Показать долг по срокам». Под капотом приложение делает всего одну команду — вызывает готовую функцию базы:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">SELECT</span> * <span class="code-keyword">FROM</span> dbo.rpt_subscrs_debts_by_term(</span>
+<span class="code-line">  _f_subscr := <span class="code-number">1</span>,</span>
+<span class="code-line">  _d_date   := <span class="code-string">'20200301'</span>::date</span>
+<span class="code-line">);</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Покажи мне результат работы функции «долги по срокам»…</p>
+              <p class="tl">…для клиента под номером 1…</p>
+              <p class="tl">…на дату 1 марта 2020 года.</p>
+              <p class="tl">Точка. База сама всё посчитает и вернёт таблицу.</p>
+            </div>
+          </div>
+        </div>
+        <p>Дальше за 5 модулей мы разберём, как именно база находит нужного клиента, складывает его долги по корзинам и выдаёт аккуратную таблицу.</p>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module1">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Верно. ISERVDB — это база данных с готовыми функциями, которые отвечают на вопросы о долгах и платежах."
+               data-explanation-wrong="Не совсем. Это не интерфейс для клиента и не отдельная программа — это хранилище данных и логика на SQL.">
+            <h3 class="quiz-question">Что такое ISERVDB в этом задании?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Готовое приложение, где жильцы оплачивают квитанции онлайн</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>База данных с набором SQL-функций для учёта долгов и платежей ЖКХ</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Отчёт в Excel, который диспетчер заполняет вручную</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Точно. Функция принимает параметры (кто, на какую дату) и возвращает готовый ответ — как записанный рецепт."
+               data-explanation-wrong="Подумай: зачем передавать номер клиента и дату, если функция просто хранит данные или показывает всё подряд?">
+            <h3 class="quiz-question">Зачем функции базы передают параметры вроде «номер клиента»?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы просто сохранить эти данные в базе</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы показать абсолютно все долги всех клиентов сразу</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы получить ответ, рассчитанный именно под этого клиента и эту дату</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module1')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module1')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="module-2" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">02</span>
+      <h1 class="module-title">Кто здесь живёт</h1>
+      <p class="module-subtitle">Таблицы базы — это папки, каждая про свой вид данных</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Шкаф с папками</h2>
+        <p>Представь <span class="term" data-definition="Таблица — это одна папка в шкафу базы данных, посвящённая одной теме. В ней строки (записи) и столбцы (поля). Как ведомость: строка — один человек, столбцы — его имя, адрес и т.д.">таблицу</span> как отдельную папку в расчётном отделе. В папке «Лицевые счета» лежат люди, в папке «Счета» — выставленные квитанции, в папке «Тарифы» — цены. База ISERVDB — это набор таких папок, которые постоянно сверяют друг с другом.</p>
+        <div class="callout callout-info">
+          <div class="callout-icon">🗂️</div>
+          <div class="callout-content">
+            <strong class="callout-title">Полезный термин</strong>
+            <p>Связь между папками держится на <span class="term" data-definition="Ключ — это уникальный номер записи, по которому одна таблица находит нужную строку в другой. Как табельный номер сотрудника: по нему видно, какие счета и платежи относятся именно к нему.">ключах</span>: у каждого клиента есть свой номер, и по нему счета «привязаны» к человеку.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Знакомься, основной состав</h2>
+        <div class="icon-rows">
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-1)">👤</div>
+            <div>
+              <strong>sd_subscrs — лицевые счета</strong>
+              <p>Кто наш клиент: имя, фамилия, адрес, дата рождения, паспорт</p>
+            </div>
+          </div>
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-2)">🧾</div>
+            <div>
+              <strong>fd_bills — счета (начисления)</strong>
+              <p>Что и на сколько выставили: услуга, сумма, и сколько ещё осталось должным</p>
+            </div>
+          </div>
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-3)">💳</div>
+            <div>
+              <strong>fd_payments + fd_payment_details — платежи</strong>
+              <p>Кто сколько заплатил и как именно этот платёж раскладывается по счетам</p>
+            </div>
+          </div>
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-4)">⚡</div>
+            <div>
+              <strong>ed_devices + ed_meter_readings — счётчики</strong>
+              <p>Какие приборы стоят у клиента и какие показания они передают</p>
+            </div>
+          </div>
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-5)">🏷️</div>
+            <div>
+              <strong>es_tariff — тарифы</strong>
+              <p>Цена за единицу услуги, действующая в конкретный период</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Как функция-отчёт «звонит» таблицам</h2>
+        <p>Когда ты просишь долг по клиенту №1, функция не знает ответ сама — она обращается к нужным папкам. Послушай их разговор:</p>
+        <div class="chat-window" id="chat-module2">
+          <div class="chat-messages">
+            <div class="chat-message" data-msg="0" data-sender="actor-a" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">R</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Функция-отчёт</span>
+                <p>Мне нужен клиент №1. Кто он и где живёт?</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="1" data-sender="actor-b" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-2)">Л</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-2)">sd_subscrs</span>
+                <p>Это Николай Озеров, г. Чебоксары, ул. Гагарина, д. 10. Держи его строку.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="2" data-sender="actor-a" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">R</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Функция-отчёт</span>
+                <p>Отлично. Теперь дай все его счета до 1 марта 2020.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="3" data-sender="actor-c" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">С</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">fd_bills</span>
+                <p>Вот: ГВС, ХВС, Э/Э — с суммами и остатками долга по каждой.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="4" data-sender="actor-a" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">R</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Функция-отчёт</span>
+                <p>Склеиваю всё в одну таблицу и отдаю тебе результат. Готово!</p>
+              </div>
+            </div>
+          </div>
+          <div class="chat-typing" id="chat-module2-typing" style="display:none">
+            <div class="chat-avatar" id="chat-module2-typing-avatar">?</div>
+            <div class="chat-typing-dots">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+          <div class="chat-controls">
+            <button class="btn chat-next-btn">Следующее сообщение</button>
+            <button class="btn chat-all-btn">Проиграть всё</button>
+            <button class="btn chat-reset-btn">Заново</button>
+            <span class="chat-progress"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module2">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Именно так. Ключ — это номер, по которому таблицы находят нужные друг другу строки."
+               data-explanation-wrong="Ключ не дублирует данные и не сортирует их — он связывает записи разных таблиц.">
+            <h3 class="quiz-question">Зачем таблицам нужны ключи (номера записей)?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы просто хранить копию данных про запас</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы одна таблица находила нужные строки в другой («счёт → клиент»)</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы таблицы всегда шли в алфавитном порядке</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Верно. Платеж сам по себе ничего не значит без привязки к счетам — детализация и есть эта связь."
+               data-explanation-wrong="Подумай: зачем отдельная таблица деталей, если платёж уже всё содержит?">
+            <h3 class="quiz-question">Что делает таблица fd_payment_details?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Дублирует платежи, чтобы не потерялись</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Хранит только общую сумму без деталей</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Раскладывает платёж по конкретным счетам и услугам</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module2')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module2')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="module-3" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">03</span>
+      <h1 class="module-title">Как детали общаются</h1>
+      <p class="module-subtitle">JOIN склеивает папки по общему ключу — как сверка двух ведомостей</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Что такое JOIN</h2>
+        <p>Чтобы собрать отчёт, базе нужно соединить людей со их счетами. Операция <span class="term" data-definition="JOIN (джоин) — это склейка двух таблиц в одну по общему признаку. Как если сверить ведомость сотрудников и ведомость зарплат по табельному номеру: получишь строку «человек + его сумма».">JOIN</span> берёт строки из одной папки и приклеивает к ним подходящие строки из другой.</p>
+        <p>Метафора: у тебя две тетради — в одной имена учеников, в другой их оценки. По «номеру ученика» ты подписываешь каждой оценке нужное имя. Результат — одна таблица «имя + оценка».</p>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Путь одного запроса</h2>
+        <p>Нажми «Следующий шаг», чтобы проследить, как данные ползут между таблицами при вызове отчёта о долгах:</p>
+        <div class="flow-animation" data-steps='[
+          {"highlight":"flow-actor-1","label":"Функция получает запрос: клиент 1, дата 2020-03-01"},
+          {"highlight":"flow-actor-1","label":"Функция идёт в папку лицевых счетов","packet":true,"from":"actor-1","to":"actor-2"},
+          {"highlight":"flow-actor-2","label":"sd_subscrs отдаёт строку клиента 1"},
+          {"highlight":"flow-actor-2","label":"Функция просит счета этого клиента","packet":true,"from":"actor-2","to":"actor-3"},
+          {"highlight":"flow-actor-3","label":"fd_bills отбирает счёта до указанной даты"},
+          {"highlight":"flow-actor-1","label":"Функция раскладывает суммы по корзинам и возвращает таблицу"}
+        ]'>
+          <div class="flow-actors">
+            <div class="flow-actor" id="flow-actor-1">
+              <div class="flow-actor-icon">R</div>
+              <span>Функция</span>
+            </div>
+            <div class="flow-actor" id="flow-actor-2">
+              <div class="flow-actor-icon">Л</div>
+              <span>sd_subscrs</span>
+            </div>
+            <div class="flow-actor" id="flow-actor-3">
+              <div class="flow-actor-icon">С</div>
+              <span>fd_bills</span>
+            </div>
+          </div>
+          <div class="flow-packet" id="flow-packet"></div>
+          <div class="flow-step-label" id="flow-label">Нажми «Следующий шаг», чтобы начать</div>
+          <div class="flow-controls">
+            <button class="btn flow-next-btn">Следующий шаг</button>
+            <button class="btn flow-reset-btn">Заново</button>
+            <span class="flow-progress"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Код склейки, слово в слово</h2>
+        <p>Вот реальный кусок из функции <code>rpt_subscrs_debts_by_term</code> — именно он соединяет клиента со счетами:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">FROM</span> dbo.sd_subscrs s</span>
+<span class="code-line"><span class="code-keyword">JOIN</span> dbo.fd_bills b <span class="code-keyword">ON</span> b.f_subscr = s.link</span>
+<span class="code-line"><span class="code-keyword">WHERE</span> s.link = _f_subscr</span>
+<span class="code-line">  <span class="code-keyword">AND</span> b.d_date &lt;= _d_date</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Начинаем с папки лицевых счетов (назовём её буквой s).</p>
+              <p class="tl">Приклеиваем к каждому счёту (b) строку, где владелец счёта совпадает с клиентом.</p>
+              <p class="tl">Оставляем только того клиента, которого попросили.</p>
+              <p class="tl">И только счета, выписанные не позже указанной даты.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Ключевая мысль</strong>
+            <p>JOIN — это не «слияние двух таблиц в одну навсегда», а взгляд на них рядом, только на время одного запроса. Исходные папки не меняются.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module3">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Так и есть. JOIN соединяет строки двух таблиц по совпадающему ключу, не трогая сами таблицы."
+               data-explanation-wrong="JOIN не копирует таблицу целиком и не удаляет данные — он лишь подставляет подходящие строки рядом.">
+            <h3 class="quiz-question">Что на самом деле делает JOIN?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Создаёт копию одной таблицы внутри другой навсегда</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Подставляет подходящие строки второй таблицы рядом — только на время запроса</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Удаляет из базы всё, что не подошло по ключу</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Верно: условие b.f_subscr = s.link — это «клей», который связывает счёт с его владельцем."
+               data-explanation-wrong="Подумай, какая строчка в коде говорит базе, КАК именно сопоставлять строки.">
+            <h3 class="quiz-question">Что в коде выше связывает счёт с клиентом?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Строка WHERE s.link = _f_subscr</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Строка AND b.d_date &lt;= _d_date</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Условие ON b.f_subscr = s.link</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module3')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module3')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="module-4" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">04</span>
+      <h1 class="module-title">Junior: четыре отчёта</h1>
+      <p class="module-subtitle">Как четыре функции превращают сырые таблицы в понятные отчёты</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Что сдал джуниор</h2>
+        <p>Задание Junior — написать четыре отчётные функции. Все они на чистом SQL: берут данные, считают и возвращают таблицу. Никакой логики «в цикле» — только умные запросы.</p>
+        <div class="pattern-cards">
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+            <div class="pattern-icon" style="background: var(--color-actor-1)">📊</div>
+            <h4 class="pattern-title">debts_by_term</h4>
+            <p class="pattern-desc">Долги по «возрасту»: свежие, постарше, совсем старые.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+            <div class="pattern-icon" style="background: var(--color-actor-2)">📅</div>
+            <h4 class="pattern-title">debts_by_year</h4>
+            <p class="pattern-desc">Сводка по месяцам года, с детализацией или без.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+            <div class="pattern-icon" style="background: var(--color-actor-3)">📋</div>
+            <h4 class="pattern-title">subscrs_docs</h4>
+            <p class="pattern-desc">Дела и мероприятия по документу и всей его цепочке.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-4)">
+            <div class="pattern-icon" style="background: var(--color-actor-4)">⚡</div>
+            <h4 class="pattern-title">subscrs_quantity</h4>
+            <p class="pattern-desc">Расход по счётчику и сумма к оплате по тарифу.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Долги по срокам: корзины через CASE</h2>
+        <p>Функция <code>debts_by_term</code> раскладывает каждый счёт по трём «корзинам» в зависимости от того, сколько дней прошло. Для этого используется <span class="term" data-definition="CASE — это вилка в запросе: «если условие выполнено, возьми одно значение, иначе другое». Как вопрос «свежий ли долг?» и раскладка по полкам.">CASE</span> — переключатель прямо внутри суммы:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">SUM</span>(<span class="code-keyword">CASE</span> <span class="code-keyword">WHEN</span> _d_date - b.d_date <span class="code-keyword">BETWEEN</span> <span class="code-number">0</span> <span class="code-keyword">AND</span> <span class="code-number">30</span></span>
+<span class="code-line">             <span class="code-keyword">THEN</span> b.n_amount <span class="code-keyword">ELSE</span> <span class="code-number">0</span> <span class="code-keyword">END</span>)::numeric(<span class="code-number">19</span>, <span class="code-number">4</span>) <span class="code-keyword">AS</span> <span class="code-string">"Нач. до 30 дней"</span></span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Сложи суммы, но не все подряд…</p>
+              <p class="tl">…только те счета, где разница дат — от 0 до 30 дней.</p>
+              <p class="tl">Остальные считаем за 0, чтобы не попали в эту колонку.</p>
+              <p class="tl">Результат подпишем «Начислено до 30 дней».</p>
+            </div>
+          </div>
+        </div>
+        <p>Таких блоков три — для корзин «до 30», «31–180» и «старше 181 дня». Всё считается за один проход по таблице.</p>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Сводка по году: переключатель детализации</h2>
+        <p>Функция <code>debts_by_year</code> умеет работать в двух режимах — один и тот же запрос, но с флагом <code>_b_detail</code>. Если он включен, добавляется колонка «Услуга»:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">CASE</span> <span class="code-keyword">WHEN</span> _b_detail <span class="code-keyword">THEN</span> b.c_sale_items <span class="code-keyword">ELSE</span> <span class="code-keyword">NULL</span> <span class="code-keyword">END</span> <span class="code-keyword">AS</span> <span class="code-string">"Услуга"</span>,</span>
+<span class="code-line">to_char(b.d_date, <span class="code-string">'MM.YYYY'</span>) <span class="code-keyword">AS</span> <span class="code-string">"Месяц"</span></span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Хочешь детализацию — покажи название услуги, нет — оставь пусто.</p>
+              <p class="tl">Дату счёта преврати в удобный вид «месяц.год», например 03.2020.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <div class="callout-icon">🎛️</div>
+          <div class="callout-content">
+            <strong class="callout-title">Один код — два отчёта</strong>
+            <p>Вместо двух разных функций джуниор сделал одну с переключателем. Меньше дублирования — проще поддерживать.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Документы: рекурсивное дерево</h2>
+        <p>Документы могут ссылаться друг на друга — «родитель → потомок». Чтобы собрать цепочку, функция <code>subscrs_docs</code> использует <span class="term" data-definition="Рекурсивный CTE — это запрос, который умеет вызывать сам себя. Он берёт стартовую строку, затем на каждом шаге добавляет строки, ссылающиеся на уже найденные. Как катить снежный ком.">рекурсивный CTE</span> — запрос, который сам себя повторяет, пока не выберет всё дерево:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">WITH RECURSIVE</span> doc_tree <span class="code-keyword">AS</span> (</span>
+<span class="code-line">    <span class="code-keyword">SELECT</span> d.link, d.f_subscr <span class="code-keyword">FROM</span> dbo.dd_docs d</span>
+<span class="code-line">    <span class="code-keyword">WHERE</span> d.link = _f_docs</span>
+<span class="code-line">  <span class="code-keyword">UNION ALL</span></span>
+<span class="code-line">    <span class="code-keyword">SELECT</span> p.link, p.f_subscr <span class="code-keyword">FROM</span> dbo.dd_docs p</span>
+<span class="code-line">    <span class="code-keyword">JOIN</span> doc_tree t <span class="code-keyword">ON</span> p.f_docs = t.link</span>
+<span class="code-line">)</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Начни с конкретного документа, который попросили.</p>
+              <p class="tl">Затем на каждом круге ищи документы, чей «родитель» — уже найденный.</p>
+              <p class="tl">Повторяй, пока цепочка не закончится.</p>
+              <p class="tl">Собери всё в одну временную табличку doc_tree.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Счётчики: оконные функции</h2>
+        <p>Функция <code>subscrs_quantity</code> считает расход между двумя показаниями и среднее за год. Для этого — <span class="term" data-definition="Оконная функция — считает значение по группе строк, не схлопывая их в одну. Как скользящая линейка: смотрит на соседние показания, но оставляет каждую строку на месте.">оконные функции</span>. Они смотрят на «соседей» строки, не сливая всё в кучу:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line">ROW_NUMBER() <span class="code-keyword">OVER</span> (</span>
+<span class="code-line">  <span class="code-keyword">PARTITION BY</span> r.f_devices <span class="code-keyword">ORDER BY</span> r.d_date <span class="code-keyword">DESC</span>) <span class="code-keyword">AS</span> rn</span>
+<span class="code-line"></span>
+<span class="code-line">r.n_value - <span class="code-keyword">LAG</span>(r.n_value) <span class="code-keyword">OVER</span> (</span>
+<span class="code-line">  <span class="code-keyword">PARTITION BY</span> r.f_devices <span class="code-keyword">ORDER BY</span> r.d_date) <span class="code-keyword">AS</span> cons</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Пронумеруй показания каждого прибора, свежие первыми (номер 1 — самое последнее).</p>
+              <p class="tl">Расход = текущее значение минус предыдущее (LAG подсматривает строку выше).</p>
+              <p class="tl">PARTITION BY значит «считай отдельно для каждого прибора».</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Почему это круто</strong>
+            <p>Оконные функции решают задачу «сравнить строку с соседней» без циклов и без дублирования запросов. Это главный признак зрелого SQL-кода.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module4">
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Именно. Рекурсивный CTE сам себя повторяет, поднимаясь по цепочке родитель→потомок."
+               data-explanation-wrong="CTE здесь нужен именно для обхода дерева ссылок, а не для сортировки или фильтрации одной строки.">
+            <h3 class="quiz-question">Зачем в subscrs_docs нужен рекурсивный CTE?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы просто отсортировать документы по дате</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы оставить только один документ по номеру</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы собрать цепочку документа и всех его «потомков»</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Верно. LAG берёт значение предыдущей строки, и разница двух показаний — это и есть расход."
+               data-explanation-wrong="Подумай, как получить расход, если у тебя только список показаний во времени.">
+            <h3 class="quiz-question">Как функция считает расход по счётчику?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Берёт самое большое показание за всё время</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Вычитает из текущего показания предыдущее (через LAG)</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Умножает показание на количество дней</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module4')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module4')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="module-5" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">05</span>
+      <h1 class="module-title">Middle: распределение платежа</h1>
+      <p class="module-subtitle">Одна функция раскладывает сумму платежа по счетам клиента</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Задача посложнее</h2>
+        <p>Клиент принёс платёж — допустим, 400 рублей. Но у него несколько счетов: за свет, воду, отопление, да ещё с долгами за разные месяцы. Надо понять, какую часть долга какого счёта этот платёж закрывает. Функция <code>ui_fp_payment_split</code> делает это сама.</p>
+        <p>В отличие от отчётов Junior, здесь код не на чистом SQL, а на <span class="term" data-definition="PL/pgSQL — процедурный язык внутри PostgreSQL. Позволяет писать логику пошагово: объявлять переменные, делать циклы и ветвления, как в обычной программе.">PL/pgSQL</span> — то есть можно использовать переменные и <span class="term" data-definition="Цикл (loop) — повторение одного и того же действия для каждой строки из списка, пока список не кончится. Как перебор чеков из пачки по одному.">циклы</span>, как в обычной программе.</p>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Тип 0: гасим самые старые счета первыми</h2>
+        <p>Первый режим работает по принципу <span class="term" data-definition="FIFO (первым пришёл — первым обслужен) — правило «сначала самое старое». Как очередь в кассу: кто раньше встал, того раньше обслужили.">FIFO</span>: сначала закрываем самый старый долг, потом следующий, пока деньги не кончатся.</p>
+        <div class="step-cards">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>Берём сумму платежа</strong>
+              <p>Допустим, у нас в руках 400 рублей к распределению.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>Идём по счетам от старых к новым</strong>
+              <p>Счёт от декабря 2018, потом январь 2019, и так далее.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <strong>Гасим сколько влезает</strong>
+              <p>Списываем с текущего счёта минимум из «остаток платежа» и «долг по счёту».</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <strong>Повторяем, пока деньги есть</strong>
+              <p>Как только платёж исчерпан — останавливаемся.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Тип 1: делим пропорционально услугам</h2>
+        <p>Второй режим хитрее: внутри одного месяца платёж распределяется между услугами пропорционально их доле в долге. Вот реальный кусок цикла по услугам:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">FOR</span> _service_name, _service_rest <span class="code-keyword">IN</span></span>
+<span class="code-line">    <span class="code-keyword">SELECT</span> b.c_sale_items, <span class="code-keyword">SUM</span>(b.n_amount_rest)</span>
+<span class="code-line">    <span class="code-keyword">FROM</span> dbo.fd_bills b <span class="code-keyword">WHERE</span> ...</span>
+<span class="code-line">    <span class="code-keyword">GROUP BY</span> b.c_sale_items <span class="code-keyword">ORDER BY</span> b.c_sale_items</span>
+<span class="code-line"><span class="code-keyword">LOOP</span></span>
+<span class="code-line">    _service_payment := <span class="code-keyword">ROUND</span>(</span>
+<span class="code-line">      _remaining * _service_rest / _month_total, <span class="code-number">4</span>);</span>
+<span class="code-line"><span class="code-keyword">END LOOP</span>;</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Для каждой услуги месяца (свет, вода…) возьми её остаток долга.</p>
+              <p class="tl">Сгруппируй одинаковые услуги и сложи их долги.</p>
+              <p class="tl">Доли: доля услуги = платёж × (её долг ÷ общий долг месяца).</p>
+              <p class="tl">Округляем до 4 знаков, чтобы копейки сошлись.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Пропорция — это честность</strong>
+            <p>Если платежа не хватает на весь месяц, пропорциональное деление гасит каждую услугу «по справедливости», а не зануляет одну и игнорирует остальные.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Защита от повторного запуска</h2>
+        <p>Что если функцию вызовут дважды для одного платежа? Без защиты деньги распределились бы второй раз и «сожгли» бы долги повторно. Поэтому в самом начале стоит страж:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">IF</span> <span class="code-keyword">EXISTS</span> (</span>
+<span class="code-line">  <span class="code-keyword">SELECT</span> <span class="code-number">1</span> <span class="code-keyword">FROM</span> dbo.fd_payment_details</span>
+<span class="code-line">  <span class="code-keyword">WHERE</span> f_payments = _link</span>
+<span class="code-line">) <span class="code-keyword">THEN</span></span>
+<span class="code-line">  <span class="code-keyword">RETURN</span>;</span>
+<span class="code-line"><span class="code-keyword">END IF</span>;</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Если для этого платежа детализация уже создана…</p>
+              <p class="tl">…просто выйди и ничего не меняй.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-warning">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-content">
+            <strong class="callout-title">Идемпотентность</strong>
+            <p>Свойство операции срабатывать один раз независимо от числа вызовов. Без этой проверки повторный запуск исказил бы остатки долгов — классический баг в платёжных системах.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module5">
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Точно. PL/pgSQL даёт переменные и циклы, чего нет в чистом SQL-запросе отчёта."
+               data-explanation-wrong="Подумай, зачем вообще понадобился другой язык, а не просто SELECT.">
+            <h3 class="quiz-question">Почему распределение платежа написано на PL/pgSQL, а не на чистом SQL?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы не надо было писать JOIN</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы отчёт работал быстрее</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы перебирать счета в цикле и менять данные шаг за шагом</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Верно. Проверка EXISTS в начале делает функцию безопасной при повторном вызове."
+               data-explanation-wrong="Подумай, что случится, если распределить один платёж дважды без проверки.">
+            <h3 class="quiz-question">Зачем нужна проверка «уже распределено?» в начале функции?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы ускорить первый запуск</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы повторный вызов не распределил деньги второй раз</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы запретить платежи больше суммы долга</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module5')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module5')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="module-6" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">06</span>
+      <h1 class="module-title">Когда всё ломается</h1>
+      <p class="module-subtitle">Где прячутся ошибки и как устроена база в целом</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Крайние случаи, о которых думает профи</h2>
+        <p>Реальные данные редко идеальны. Хороший разработчик заранее учитывает ситуации, когда «всё пошло не по плану»:</p>
+        <div class="pattern-cards">
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+            <div class="pattern-icon" style="background: var(--color-actor-1)">0️⃣</div>
+            <h4 class="pattern-title">Нулевой платёж</h4>
+            <p class="pattern-desc">Сумма 0 — функция должна просто ничего не делать, а не падать.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+            <div class="pattern-icon" style="background: var(--color-actor-2)">💰</div>
+            <h4 class="pattern-title">Переплата</h4>
+            <p class="pattern-desc">Платёж больше всего долга — остаток «сгорает», счета обнуляются.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+            <div class="pattern-icon" style="background: var(--color-actor-3)">📆</div>
+            <h4 class="pattern-title">Дата в будущем</h4>
+            <p class="pattern-desc">Показания и счета отсекаются условием «не позже даты» — иначе будет пусто.</p>
+          </div>
+        </div>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">IF NOT FOUND</span> <span class="code-keyword">OR</span> _payment_amount &lt;= <span class="code-number">0</span> <span class="code-keyword">THEN</span></span>
+<span class="code-line">  <span class="code-keyword">RETURN</span>;</span>
+<span class="code-line"><span class="code-keyword">END IF</span>;</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Если платёж не найден в базе…</p>
+              <p class="tl">…или его сумма ноль либо меньше — выйти, ничего не трогая.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Отладка: куда смотреть</h2>
+        <p>Допустим, отчёт показывает пустоту или не ту сумму. Вот куда идти проверять — по порядку:</p>
+        <div class="step-cards">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>Параметры</strong>
+              <p>Точно ли передан правильный номер клиента и дата? Частая ошибка — перепутан порядок.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>Исходные таблицы</strong>
+              <p>Есть ли вообще счета у этого клиента на нужную дату? SELECT из fd_bills напрямую.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <strong>Условия JOIN и WHERE</strong>
+              <p>Не отсекает ли фильтр по дате лишнее? Не теряются ли строки из-за строгого равенства.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <strong>Детали расчёта</strong>
+              <p>Корректны ли корзины CASE и округления? Сверь с эталонным результатом из задания.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Большая картина: Junior против Middle</h2>
+        <p>Два уровня задания показывают, как растёт ответственность кода:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-comment">-- Junior: только читает и считает</span></span>
+<span class="code-line"><span class="code-keyword">CREATE FUNCTION</span> ... <span class="code-keyword">RETURNS TABLE</span> (...)</span>
+<span class="code-line">  <span class="code-keyword">LANGUAGE sql</span>  <span class="code-comment">-- SELECT, ничего не меняет</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-comment">-- Middle: меняет данные</span></span>
+<span class="code-line"><span class="code-keyword">CREATE FUNCTION</span> ... <span class="code-keyword">RETURNS void</span></span>
+<span class="code-line">  <span class="code-keyword">LANGUAGE plpgsql</span> <span class="code-comment">-- INSERT/UPDATE счетов</span></span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Junior-функции только показывают данные — база не меняется.</p>
+              <p class="tl">Они возвращают таблицу, как справку.</p>
+              <p class="tl">Middle-функция сама правит остатки долгов в базе.</p>
+              <p class="tl">Ответственность выше: ошибка испортит реальные данные.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Главный урок</strong>
+            <p>Чем больше код меняет данные, тем важнее защиты (проверки, идемпотентность). Отчёты можно перезапустить сколько угодно — изменения базы необратимы.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module6">
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Правильно. Сначала проверь, есть ли вообще данные и верны ли параметры — чаще всего проблема там."
+               data-explanation-wrong="Бегать править логику, не проверив данные, — пустая трата времени.">
+            <h3 class="quiz-question">Отчёт вернул пустоту. С чего начать проверку?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Сразу переписывать логику JOIN</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Проверить, не сломался ли сервер базы</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Проверить параметры и наличие данных у клиента на эту дату</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Верно. Изменение данных в базе необратимо, поэтому там критичны проверки и идемпотентность."
+               data-explanation-wrong="Подумай, что безопаснее: показать справку или затереть чужие долги.">
+            <h3 class="quiz-question">В чём главная разница Middle-функции от Junior-отчётов?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Она работает в 10 раз быстрее</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Она меняет данные в базе, поэтому ошибка необратима</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Она не возвращает таблицу, поэтому проще</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module6')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module6')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+</body>
+</html>

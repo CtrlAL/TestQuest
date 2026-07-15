@@ -1,0 +1,125 @@
+<section class="module" id="module-1" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">01</span>
+      <h1 class="module-title">Что это за проект</h1>
+      <p class="module-subtitle">ISERVDB — это «бухгалтерия» коммунальной службы, написанная на SQL</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Представь себе расчётный отдел ЖКХ</h2>
+        <p>Перед тобой — <span class="term" data-definition="База данных — это аккуратное цифровое хранилище информации, как огромный шкаф с папками, где каждая папка лежит на своём месте и до неё легко добраться.">база данных</span> под названием <strong>ISERVDB</strong>. В ней живёт учёт одной коммунальной службы: кто сколько должен за свет и воду, кто заплатил, какие счётчики стоят у людей дома.</p>
+        <p>Это не приложение с кнопками, которые ты нажимаешь. Это «мозг» такого приложения — набор правил на языке <span class="term" data-definition="SQL (читается «сиквел») — язык запросов к базе данных. С его помощью ты просишь базу: «покажи», «посчитай», «сохрани». Как разговор с очень дотошным библиотекарем.">SQL</span>, который умеет отвечать на вопросы вроде «сколько Иванов должен на 1 марта?».</p>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Зачем тебе это знать</strong>
+            <p>Ты можешь попросить ИИ написать такой «мозг» для своего проекта. Чтобы он сделал это хорошо, ты должен понимать, из каких частей тот состоит и зачем каждая нужна.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Что умеет этот «расчётный отдел»</h2>
+        <p>Задание для разработчика звучало так: написать набор <span class="term" data-definition="Функция в базе данных — это сохранённый вопрос с параметрами. Ты даёшь ей входные данные (например, номер клиента), а она возвращает готовый ответ. Как заранее записанный рецепт.">функций</span>, которые отвечают на типичные вопросы диспетчера ЖКХ:</p>
+        <div class="pattern-cards">
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+            <div class="pattern-icon" style="background: var(--color-actor-1)">📊</div>
+            <h4 class="pattern-title">Долги по срокам</h4>
+            <p class="pattern-desc">Сколько клиент должен «свеженького» (до 30 дней) и сколько уже просрочено на месяцы.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+            <div class="pattern-icon" style="background: var(--color-actor-2)">📅</div>
+            <h4 class="pattern-title">Долги по месяцам</h4>
+            <p class="pattern-desc">Сводка начислений и долгов за выбранный год, с детализацией или без.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+            <div class="pattern-icon" style="background: var(--color-actor-3)">📋</div>
+            <h4 class="pattern-title">Документы и дела</h4>
+            <p class="pattern-desc">Какие «мероприятия» (звонки, иски) открыты по документу и всей его цепочке.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-4)">
+            <div class="pattern-icon" style="background: var(--color-actor-4)">⚡</div>
+            <h4 class="pattern-title">Расход по счётчикам</h4>
+            <p class="pattern-desc">Сколько электричества накрутил счётчик и на какую сумму это выльется.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Что происходит, когда ты «нажимаешь кнопку»</h2>
+        <p>В реальном приложении ты бы выбрал клиента и дату и нажал «Показать долг по срокам». Под капотом приложение делает всего одну команду — вызывает готовую функцию базы:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">SELECT</span> * <span class="code-keyword">FROM</span> dbo.rpt_subscrs_debts_by_term(</span>
+<span class="code-line">  _f_subscr := <span class="code-number">1</span>,</span>
+<span class="code-line">  _d_date   := <span class="code-string">'20200301'</span>::date</span>
+<span class="code-line">);</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Покажи мне результат работы функции «долги по срокам»…</p>
+              <p class="tl">…для клиента под номером 1…</p>
+              <p class="tl">…на дату 1 марта 2020 года.</p>
+              <p class="tl">Точка. База сама всё посчитает и вернёт таблицу.</p>
+            </div>
+          </div>
+        </div>
+        <p>Дальше за 5 модулей мы разберём, как именно база находит нужного клиента, складывает его долги по корзинам и выдаёт аккуратную таблицу.</p>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module1">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Верно. ISERVDB — это база данных с готовыми функциями, которые отвечают на вопросы о долгах и платежах."
+               data-explanation-wrong="Не совсем. Это не интерфейс для клиента и не отдельная программа — это хранилище данных и логика на SQL.">
+            <h3 class="quiz-question">Что такое ISERVDB в этом задании?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Готовое приложение, где жильцы оплачивают квитанции онлайн</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>База данных с набором SQL-функций для учёта долгов и платежей ЖКХ</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Отчёт в Excel, который диспетчер заполняет вручную</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Точно. Функция принимает параметры (кто, на какую дату) и возвращает готовый ответ — как записанный рецепт."
+               data-explanation-wrong="Подумай: зачем передавать номер клиента и дату, если функция просто хранит данные или показывает всё подряд?">
+            <h3 class="quiz-question">Зачем функции базы передают параметры вроде «номер клиента»?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы просто сохранить эти данные в базе</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы показать абсолютно все долги всех клиентов сразу</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы получить ответ, рассчитанный именно под этого клиента и эту дату</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module1')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module1')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,192 @@
+<section class="module" id="module-4" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">04</span>
+      <h1 class="module-title">Junior: четыре отчёта</h1>
+      <p class="module-subtitle">Как четыре функции превращают сырые таблицы в понятные отчёты</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Что сдал джуниор</h2>
+        <p>Задание Junior — написать четыре отчётные функции. Все они на чистом SQL: берут данные, считают и возвращают таблицу. Никакой логики «в цикле» — только умные запросы.</p>
+        <div class="pattern-cards">
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+            <div class="pattern-icon" style="background: var(--color-actor-1)">📊</div>
+            <h4 class="pattern-title">debts_by_term</h4>
+            <p class="pattern-desc">Долги по «возрасту»: свежие, постарше, совсем старые.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+            <div class="pattern-icon" style="background: var(--color-actor-2)">📅</div>
+            <h4 class="pattern-title">debts_by_year</h4>
+            <p class="pattern-desc">Сводка по месяцам года, с детализацией или без.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+            <div class="pattern-icon" style="background: var(--color-actor-3)">📋</div>
+            <h4 class="pattern-title">subscrs_docs</h4>
+            <p class="pattern-desc">Дела и мероприятия по документу и всей его цепочке.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-4)">
+            <div class="pattern-icon" style="background: var(--color-actor-4)">⚡</div>
+            <h4 class="pattern-title">subscrs_quantity</h4>
+            <p class="pattern-desc">Расход по счётчику и сумма к оплате по тарифу.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Долги по срокам: корзины через CASE</h2>
+        <p>Функция <code>debts_by_term</code> раскладывает каждый счёт по трём «корзинам» в зависимости от того, сколько дней прошло. Для этого используется <span class="term" data-definition="CASE — это вилка в запросе: «если условие выполнено, возьми одно значение, иначе другое». Как вопрос «свежий ли долг?» и раскладка по полкам.">CASE</span> — переключатель прямо внутри суммы:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">SUM</span>(<span class="code-keyword">CASE</span> <span class="code-keyword">WHEN</span> _d_date - b.d_date <span class="code-keyword">BETWEEN</span> <span class="code-number">0</span> <span class="code-keyword">AND</span> <span class="code-number">30</span></span>
+<span class="code-line">             <span class="code-keyword">THEN</span> b.n_amount <span class="code-keyword">ELSE</span> <span class="code-number">0</span> <span class="code-keyword">END</span>)::numeric(<span class="code-number">19</span>, <span class="code-number">4</span>) <span class="code-keyword">AS</span> <span class="code-string">"Нач. до 30 дней"</span></span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Сложи суммы, но не все подряд…</p>
+              <p class="tl">…только те счета, где разница дат — от 0 до 30 дней.</p>
+              <p class="tl">Остальные считаем за 0, чтобы не попали в эту колонку.</p>
+              <p class="tl">Результат подпишем «Начислено до 30 дней».</p>
+            </div>
+          </div>
+        </div>
+        <p>Таких блоков три — для корзин «до 30», «31–180» и «старше 181 дня». Всё считается за один проход по таблице.</p>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Сводка по году: переключатель детализации</h2>
+        <p>Функция <code>debts_by_year</code> умеет работать в двух режимах — один и тот же запрос, но с флагом <code>_b_detail</code>. Если он включен, добавляется колонка «Услуга»:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">CASE</span> <span class="code-keyword">WHEN</span> _b_detail <span class="code-keyword">THEN</span> b.c_sale_items <span class="code-keyword">ELSE</span> <span class="code-keyword">NULL</span> <span class="code-keyword">END</span> <span class="code-keyword">AS</span> <span class="code-string">"Услуга"</span>,</span>
+<span class="code-line">to_char(b.d_date, <span class="code-string">'MM.YYYY'</span>) <span class="code-keyword">AS</span> <span class="code-string">"Месяц"</span></span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Хочешь детализацию — покажи название услуги, нет — оставь пусто.</p>
+              <p class="tl">Дату счёта преврати в удобный вид «месяц.год», например 03.2020.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-info">
+          <div class="callout-icon">🎛️</div>
+          <div class="callout-content">
+            <strong class="callout-title">Один код — два отчёта</strong>
+            <p>Вместо двух разных функций джуниор сделал одну с переключателем. Меньше дублирования — проще поддерживать.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Документы: рекурсивное дерево</h2>
+        <p>Документы могут ссылаться друг на друга — «родитель → потомок». Чтобы собрать цепочку, функция <code>subscrs_docs</code> использует <span class="term" data-definition="Рекурсивный CTE — это запрос, который умеет вызывать сам себя. Он берёт стартовую строку, затем на каждом шаге добавляет строки, ссылающиеся на уже найденные. Как катить снежный ком.">рекурсивный CTE</span> — запрос, который сам себя повторяет, пока не выберет всё дерево:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">WITH RECURSIVE</span> doc_tree <span class="code-keyword">AS</span> (</span>
+<span class="code-line">    <span class="code-keyword">SELECT</span> d.link, d.f_subscr <span class="code-keyword">FROM</span> dbo.dd_docs d</span>
+<span class="code-line">    <span class="code-keyword">WHERE</span> d.link = _f_docs</span>
+<span class="code-line">  <span class="code-keyword">UNION ALL</span></span>
+<span class="code-line">    <span class="code-keyword">SELECT</span> p.link, p.f_subscr <span class="code-keyword">FROM</span> dbo.dd_docs p</span>
+<span class="code-line">    <span class="code-keyword">JOIN</span> doc_tree t <span class="code-keyword">ON</span> p.f_docs = t.link</span>
+<span class="code-line">)</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Начни с конкретного документа, который попросили.</p>
+              <p class="tl">Затем на каждом круге ищи документы, чей «родитель» — уже найденный.</p>
+              <p class="tl">Повторяй, пока цепочка не закончится.</p>
+              <p class="tl">Собери всё в одну временную табличку doc_tree.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Счётчики: оконные функции</h2>
+        <p>Функция <code>subscrs_quantity</code> считает расход между двумя показаниями и среднее за год. Для этого — <span class="term" data-definition="Оконная функция — считает значение по группе строк, не схлопывая их в одну. Как скользящая линейка: смотрит на соседние показания, но оставляет каждую строку на месте.">оконные функции</span>. Они смотрят на «соседей» строки, не сливая всё в кучу:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line">ROW_NUMBER() <span class="code-keyword">OVER</span> (</span>
+<span class="code-line">  <span class="code-keyword">PARTITION BY</span> r.f_devices <span class="code-keyword">ORDER BY</span> r.d_date <span class="code-keyword">DESC</span>) <span class="code-keyword">AS</span> rn</span>
+<span class="code-line"></span>
+<span class="code-line">r.n_value - <span class="code-keyword">LAG</span>(r.n_value) <span class="code-keyword">OVER</span> (</span>
+<span class="code-line">  <span class="code-keyword">PARTITION BY</span> r.f_devices <span class="code-keyword">ORDER BY</span> r.d_date) <span class="code-keyword">AS</span> cons</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Пронумеруй показания каждого прибора, свежие первыми (номер 1 — самое последнее).</p>
+              <p class="tl">Расход = текущее значение минус предыдущее (LAG подсматривает строку выше).</p>
+              <p class="tl">PARTITION BY значит «считай отдельно для каждого прибора».</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Почему это круто</strong>
+            <p>Оконные функции решают задачу «сравнить строку с соседней» без циклов и без дублирования запросов. Это главный признак зрелого SQL-кода.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module4">
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Именно. Рекурсивный CTE сам себя повторяет, поднимаясь по цепочке родитель→потомок."
+               data-explanation-wrong="CTE здесь нужен именно для обхода дерева ссылок, а не для сортировки или фильтрации одной строки.">
+            <h3 class="quiz-question">Зачем в subscrs_docs нужен рекурсивный CTE?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы просто отсортировать документы по дате</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы оставить только один документ по номеру</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы собрать цепочку документа и всех его «потомков»</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Верно. LAG берёт значение предыдущей строки, и разница двух показаний — это и есть расход."
+               data-explanation-wrong="Подумай, как получить расход, если у тебя только список показаний во времени.">
+            <h3 class="quiz-question">Как функция считает расход по счётчику?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Берёт самое большое показание за всё время</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Вычитает из текущего показания предыдущее (через LAG)</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Умножает показание на количество дней</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module4')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module4')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,166 @@
+<section class="module" id="module-5" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">05</span>
+      <h1 class="module-title">Middle: распределение платежа</h1>
+      <p class="module-subtitle">Одна функция раскладывает сумму платежа по счетам клиента</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Задача посложнее</h2>
+        <p>Клиент принёс платёж — допустим, 400 рублей. Но у него несколько счетов: за свет, воду, отопление, да ещё с долгами за разные месяцы. Надо понять, какую часть долга какого счёта этот платёж закрывает. Функция <code>ui_fp_payment_split</code> делает это сама.</p>
+        <p>В отличие от отчётов Junior, здесь код не на чистом SQL, а на <span class="term" data-definition="PL/pgSQL — процедурный язык внутри PostgreSQL. Позволяет писать логику пошагово: объявлять переменные, делать циклы и ветвления, как в обычной программе.">PL/pgSQL</span> — то есть можно использовать переменные и <span class="term" data-definition="Цикл (loop) — повторение одного и того же действия для каждой строки из списка, пока список не кончится. Как перебор чеков из пачки по одному.">циклы</span>, как в обычной программе.</p>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Тип 0: гасим самые старые счета первыми</h2>
+        <p>Первый режим работает по принципу <span class="term" data-definition="FIFO (первым пришёл — первым обслужен) — правило «сначала самое старое». Как очередь в кассу: кто раньше встал, того раньше обслужили.">FIFO</span>: сначала закрываем самый старый долг, потом следующий, пока деньги не кончатся.</p>
+        <div class="step-cards">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>Берём сумму платежа</strong>
+              <p>Допустим, у нас в руках 400 рублей к распределению.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>Идём по счетам от старых к новым</strong>
+              <p>Счёт от декабря 2018, потом январь 2019, и так далее.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <strong>Гасим сколько влезает</strong>
+              <p>Списываем с текущего счёта минимум из «остаток платежа» и «долг по счёту».</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <strong>Повторяем, пока деньги есть</strong>
+              <p>Как только платёж исчерпан — останавливаемся.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Тип 1: делим пропорционально услугам</h2>
+        <p>Второй режим хитрее: внутри одного месяца платёж распределяется между услугами пропорционально их доле в долге. Вот реальный кусок цикла по услугам:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">FOR</span> _service_name, _service_rest <span class="code-keyword">IN</span></span>
+<span class="code-line">    <span class="code-keyword">SELECT</span> b.c_sale_items, <span class="code-keyword">SUM</span>(b.n_amount_rest)</span>
+<span class="code-line">    <span class="code-keyword">FROM</span> dbo.fd_bills b <span class="code-keyword">WHERE</span> ...</span>
+<span class="code-line">    <span class="code-keyword">GROUP BY</span> b.c_sale_items <span class="code-keyword">ORDER BY</span> b.c_sale_items</span>
+<span class="code-line"><span class="code-keyword">LOOP</span></span>
+<span class="code-line">    _service_payment := <span class="code-keyword">ROUND</span>(</span>
+<span class="code-line">      _remaining * _service_rest / _month_total, <span class="code-number">4</span>);</span>
+<span class="code-line"><span class="code-keyword">END LOOP</span>;</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Для каждой услуги месяца (свет, вода…) возьми её остаток долга.</p>
+              <p class="tl">Сгруппируй одинаковые услуги и сложи их долги.</p>
+              <p class="tl">Доли: доля услуги = платёж × (её долг ÷ общий долг месяца).</p>
+              <p class="tl">Округляем до 4 знаков, чтобы копейки сошлись.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Пропорция — это честность</strong>
+            <p>Если платежа не хватает на весь месяц, пропорциональное деление гасит каждую услугу «по справедливости», а не зануляет одну и игнорирует остальные.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Защита от повторного запуска</h2>
+        <p>Что если функцию вызовут дважды для одного платежа? Без защиты деньги распределились бы второй раз и «сожгли» бы долги повторно. Поэтому в самом начале стоит страж:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">IF</span> <span class="code-keyword">EXISTS</span> (</span>
+<span class="code-line">  <span class="code-keyword">SELECT</span> <span class="code-number">1</span> <span class="code-keyword">FROM</span> dbo.fd_payment_details</span>
+<span class="code-line">  <span class="code-keyword">WHERE</span> f_payments = _link</span>
+<span class="code-line">) <span class="code-keyword">THEN</span></span>
+<span class="code-line">  <span class="code-keyword">RETURN</span>;</span>
+<span class="code-line"><span class="code-keyword">END IF</span>;</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Если для этого платежа детализация уже создана…</p>
+              <p class="tl">…просто выйди и ничего не меняй.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-warning">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-content">
+            <strong class="callout-title">Идемпотентность</strong>
+            <p>Свойство операции срабатывать один раз независимо от числа вызовов. Без этой проверки повторный запуск исказил бы остатки долгов — классический баг в платёжных системах.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module5">
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Точно. PL/pgSQL даёт переменные и циклы, чего нет в чистом SQL-запросе отчёта."
+               data-explanation-wrong="Подумай, зачем вообще понадобился другой язык, а не просто SELECT.">
+            <h3 class="quiz-question">Почему распределение платежа написано на PL/pgSQL, а не на чистом SQL?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы не надо было писать JOIN</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы отчёт работал быстрее</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы перебирать счета в цикле и менять данные шаг за шагом</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Верно. Проверка EXISTS в начале делает функцию безопасной при повторном вызове."
+               data-explanation-wrong="Подумай, что случится, если распределить один платёж дважды без проверки.">
+            <h3 class="quiz-question">Зачем нужна проверка «уже распределено?» в начале функции?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы ускорить первый запуск</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы повторный вызов не распределил деньги второй раз</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы запретить платежи больше суммы долга</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module5')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module5')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

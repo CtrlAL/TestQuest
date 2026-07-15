@@ -1,0 +1,172 @@
+<section class="module" id="module-2" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">02</span>
+      <h1 class="module-title">Кто здесь живёт</h1>
+      <p class="module-subtitle">Таблицы базы — это папки, каждая про свой вид данных</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Шкаф с папками</h2>
+        <p>Представь <span class="term" data-definition="Таблица — это одна папка в шкафу базы данных, посвящённая одной теме. В ней строки (записи) и столбцы (поля). Как ведомость: строка — один человек, столбцы — его имя, адрес и т.д.">таблицу</span> как отдельную папку в расчётном отделе. В папке «Лицевые счета» лежат люди, в папке «Счета» — выставленные квитанции, в папке «Тарифы» — цены. База ISERVDB — это набор таких папок, которые постоянно сверяют друг с другом.</p>
+        <div class="callout callout-info">
+          <div class="callout-icon">🗂️</div>
+          <div class="callout-content">
+            <strong class="callout-title">Полезный термин</strong>
+            <p>Связь между папками держится на <span class="term" data-definition="Ключ — это уникальный номер записи, по которому одна таблица находит нужную строку в другой. Как табельный номер сотрудника: по нему видно, какие счета и платежи относятся именно к нему.">ключах</span>: у каждого клиента есть свой номер, и по нему счета «привязаны» к человеку.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Знакомься, основной состав</h2>
+        <div class="icon-rows">
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-1)">👤</div>
+            <div>
+              <strong>sd_subscrs — лицевые счета</strong>
+              <p>Кто наш клиент: имя, фамилия, адрес, дата рождения, паспорт</p>
+            </div>
+          </div>
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-2)">🧾</div>
+            <div>
+              <strong>fd_bills — счета (начисления)</strong>
+              <p>Что и на сколько выставили: услуга, сумма, и сколько ещё осталось должным</p>
+            </div>
+          </div>
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-3)">💳</div>
+            <div>
+              <strong>fd_payments + fd_payment_details — платежи</strong>
+              <p>Кто сколько заплатил и как именно этот платёж раскладывается по счетам</p>
+            </div>
+          </div>
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-4)">⚡</div>
+            <div>
+              <strong>ed_devices + ed_meter_readings — счётчики</strong>
+              <p>Какие приборы стоят у клиента и какие показания они передают</p>
+            </div>
+          </div>
+          <div class="icon-row">
+            <div class="icon-circle" style="background: var(--color-actor-5)">🏷️</div>
+            <div>
+              <strong>es_tariff — тарифы</strong>
+              <p>Цена за единицу услуги, действующая в конкретный период</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Как функция-отчёт «звонит» таблицам</h2>
+        <p>Когда ты просишь долг по клиенту №1, функция не знает ответ сама — она обращается к нужным папкам. Послушай их разговор:</p>
+        <div class="chat-window" id="chat-module2">
+          <div class="chat-messages">
+            <div class="chat-message" data-msg="0" data-sender="actor-a" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">R</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Функция-отчёт</span>
+                <p>Мне нужен клиент №1. Кто он и где живёт?</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="1" data-sender="actor-b" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-2)">Л</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-2)">sd_subscrs</span>
+                <p>Это Николай Озеров, г. Чебоксары, ул. Гагарина, д. 10. Держи его строку.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="2" data-sender="actor-a" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">R</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Функция-отчёт</span>
+                <p>Отлично. Теперь дай все его счета до 1 марта 2020.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="3" data-sender="actor-c" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-3)">С</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-3)">fd_bills</span>
+                <p>Вот: ГВС, ХВС, Э/Э — с суммами и остатками долга по каждой.</p>
+              </div>
+            </div>
+            <div class="chat-message" data-msg="4" data-sender="actor-a" style="display:none">
+              <div class="chat-avatar" style="background: var(--color-actor-1)">R</div>
+              <div class="chat-bubble">
+                <span class="chat-sender" style="color: var(--color-actor-1)">Функция-отчёт</span>
+                <p>Склеиваю всё в одну таблицу и отдаю тебе результат. Готово!</p>
+              </div>
+            </div>
+          </div>
+          <div class="chat-typing" id="chat-module2-typing" style="display:none">
+            <div class="chat-avatar" id="chat-module2-typing-avatar">?</div>
+            <div class="chat-typing-dots">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+          <div class="chat-controls">
+            <button class="btn chat-next-btn">Следующее сообщение</button>
+            <button class="btn chat-all-btn">Проиграть всё</button>
+            <button class="btn chat-reset-btn">Заново</button>
+            <span class="chat-progress"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module2">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Именно так. Ключ — это номер, по которому таблицы находят нужные друг другу строки."
+               data-explanation-wrong="Ключ не дублирует данные и не сортирует их — он связывает записи разных таблиц.">
+            <h3 class="quiz-question">Зачем таблицам нужны ключи (номера записей)?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы просто хранить копию данных про запас</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы одна таблица находила нужные строки в другой («счёт → клиент»)</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Чтобы таблицы всегда шли в алфавитном порядке</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Верно. Платеж сам по себе ничего не значит без привязки к счетам — детализация и есть эта связь."
+               data-explanation-wrong="Подумай: зачем отдельная таблица деталей, если платёж уже всё содержит?">
+            <h3 class="quiz-question">Что делает таблица fd_payment_details?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Дублирует платежи, чтобы не потерялись</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Хранит только общую сумму без деталей</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Раскладывает платёж по конкретным счетам и услугам</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module2')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module2')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

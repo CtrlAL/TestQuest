@@ -1,0 +1,166 @@
+<section class="module" id="module-6" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">06</span>
+      <h1 class="module-title">Когда всё ломается</h1>
+      <p class="module-subtitle">Где прячутся ошибки и как устроена база в целом</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Крайние случаи, о которых думает профи</h2>
+        <p>Реальные данные редко идеальны. Хороший разработчик заранее учитывает ситуации, когда «всё пошло не по плану»:</p>
+        <div class="pattern-cards">
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-1)">
+            <div class="pattern-icon" style="background: var(--color-actor-1)">0️⃣</div>
+            <h4 class="pattern-title">Нулевой платёж</h4>
+            <p class="pattern-desc">Сумма 0 — функция должна просто ничего не делать, а не падать.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-2)">
+            <div class="pattern-icon" style="background: var(--color-actor-2)">💰</div>
+            <h4 class="pattern-title">Переплата</h4>
+            <p class="pattern-desc">Платёж больше всего долга — остаток «сгорает», счета обнуляются.</p>
+          </div>
+          <div class="pattern-card" style="border-top: 3px solid var(--color-actor-3)">
+            <div class="pattern-icon" style="background: var(--color-actor-3)">📆</div>
+            <h4 class="pattern-title">Дата в будущем</h4>
+            <p class="pattern-desc">Показания и счета отсекаются условием «не позже даты» — иначе будет пусто.</p>
+          </div>
+        </div>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">IF NOT FOUND</span> <span class="code-keyword">OR</span> _payment_amount &lt;= <span class="code-number">0</span> <span class="code-keyword">THEN</span></span>
+<span class="code-line">  <span class="code-keyword">RETURN</span>;</span>
+<span class="code-line"><span class="code-keyword">END IF</span>;</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Если платёж не найден в базе…</p>
+              <p class="tl">…или его сумма ноль либо меньше — выйти, ничего не трогая.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Отладка: куда смотреть</h2>
+        <p>Допустим, отчёт показывает пустоту или не ту сумму. Вот куда идти проверять — по порядку:</p>
+        <div class="step-cards">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <strong>Параметры</strong>
+              <p>Точно ли передан правильный номер клиента и дата? Частая ошибка — перепутан порядок.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <strong>Исходные таблицы</strong>
+              <p>Есть ли вообще счета у этого клиента на нужную дату? SELECT из fd_bills напрямую.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <strong>Условия JOIN и WHERE</strong>
+              <p>Не отсекает ли фильтр по дате лишнее? Не теряются ли строки из-за строгого равенства.</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <strong>Детали расчёта</strong>
+              <p>Корректны ли корзины CASE и округления? Сверь с эталонным результатом из задания.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Большая картина: Junior против Middle</h2>
+        <p>Два уровня задания показывают, как растёт ответственность кода:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-comment">-- Junior: только читает и считает</span></span>
+<span class="code-line"><span class="code-keyword">CREATE FUNCTION</span> ... <span class="code-keyword">RETURNS TABLE</span> (...)</span>
+<span class="code-line">  <span class="code-keyword">LANGUAGE sql</span>  <span class="code-comment">-- SELECT, ничего не меняет</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-comment">-- Middle: меняет данные</span></span>
+<span class="code-line"><span class="code-keyword">CREATE FUNCTION</span> ... <span class="code-keyword">RETURNS void</span></span>
+<span class="code-line">  <span class="code-keyword">LANGUAGE plpgsql</span> <span class="code-comment">-- INSERT/UPDATE счетов</span></span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Junior-функции только показывают данные — база не меняется.</p>
+              <p class="tl">Они возвращают таблицу, как справку.</p>
+              <p class="tl">Middle-функция сама правит остатки долгов в базе.</p>
+              <p class="tl">Ответственность выше: ошибка испортит реальные данные.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Главный урок</strong>
+            <p>Чем больше код меняет данные, тем важнее защиты (проверки, идемпотентность). Отчёты можно перезапустить сколько угодно — изменения базы необратимы.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module6">
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Правильно. Сначала проверь, есть ли вообще данные и верны ли параметры — чаще всего проблема там."
+               data-explanation-wrong="Бегать править логику, не проверив данные, — пустая трата времени.">
+            <h3 class="quiz-question">Отчёт вернул пустоту. С чего начать проверку?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Сразу переписывать логику JOIN</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Проверить, не сломался ли сервер базы</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Проверить параметры и наличие данных у клиента на эту дату</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Верно. Изменение данных в базе необратимо, поэтому там критичны проверки и идемпотентность."
+               data-explanation-wrong="Подумай, что безопаснее: показать справку или затереть чужие долги.">
+            <h3 class="quiz-question">В чём главная разница Middle-функции от Junior-отчётов?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Она работает в 10 раз быстрее</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Она меняет данные в базе, поэтому ошибка необратима</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Она не возвращает таблицу, поэтому проще</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module6')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module6')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

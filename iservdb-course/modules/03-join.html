@@ -1,0 +1,132 @@
+<section class="module" id="module-3" style="background: var(--color-bg)">
+  <div class="module-content">
+    <header class="module-header animate-in">
+      <span class="module-number">03</span>
+      <h1 class="module-title">Как детали общаются</h1>
+      <p class="module-subtitle">JOIN склеивает папки по общему ключу — как сверка двух ведомостей</p>
+    </header>
+
+    <div class="module-body">
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Что такое JOIN</h2>
+        <p>Чтобы собрать отчёт, базе нужно соединить людей со их счетами. Операция <span class="term" data-definition="JOIN (джоин) — это склейка двух таблиц в одну по общему признаку. Как если сверить ведомость сотрудников и ведомость зарплат по табельному номеру: получишь строку «человек + его сумма».">JOIN</span> берёт строки из одной папки и приклеивает к ним подходящие строки из другой.</p>
+        <p>Метафора: у тебя две тетради — в одной имена учеников, в другой их оценки. По «номеру ученика» ты подписываешь каждой оценке нужное имя. Результат — одна таблица «имя + оценка».</p>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Путь одного запроса</h2>
+        <p>Нажми «Следующий шаг», чтобы проследить, как данные ползут между таблицами при вызове отчёта о долгах:</p>
+        <div class="flow-animation" data-steps='[
+          {"highlight":"flow-actor-1","label":"Функция получает запрос: клиент 1, дата 2020-03-01"},
+          {"highlight":"flow-actor-1","label":"Функция идёт в папку лицевых счетов","packet":true,"from":"actor-1","to":"actor-2"},
+          {"highlight":"flow-actor-2","label":"sd_subscrs отдаёт строку клиента 1"},
+          {"highlight":"flow-actor-2","label":"Функция просит счета этого клиента","packet":true,"from":"actor-2","to":"actor-3"},
+          {"highlight":"flow-actor-3","label":"fd_bills отбирает счёта до указанной даты"},
+          {"highlight":"flow-actor-1","label":"Функция раскладывает суммы по корзинам и возвращает таблицу"}
+        ]'>
+          <div class="flow-actors">
+            <div class="flow-actor" id="flow-actor-1">
+              <div class="flow-actor-icon">R</div>
+              <span>Функция</span>
+            </div>
+            <div class="flow-actor" id="flow-actor-2">
+              <div class="flow-actor-icon">Л</div>
+              <span>sd_subscrs</span>
+            </div>
+            <div class="flow-actor" id="flow-actor-3">
+              <div class="flow-actor-icon">С</div>
+              <span>fd_bills</span>
+            </div>
+          </div>
+          <div class="flow-packet" id="flow-packet"></div>
+          <div class="flow-step-label" id="flow-label">Нажми «Следующий шаг», чтобы начать</div>
+          <div class="flow-controls">
+            <button class="btn flow-next-btn">Следующий шаг</button>
+            <button class="btn flow-reset-btn">Заново</button>
+            <span class="flow-progress"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Код склейки, слово в слово</h2>
+        <p>Вот реальный кусок из функции <code>rpt_subscrs_debts_by_term</code> — именно он соединяет клиента со счетами:</p>
+        <div class="translation-block">
+          <div class="translation-code">
+            <span class="translation-label">CODE</span>
+            <pre><code><span class="code-line"><span class="code-keyword">FROM</span> dbo.sd_subscrs s</span>
+<span class="code-line"><span class="code-keyword">JOIN</span> dbo.fd_bills b <span class="code-keyword">ON</span> b.f_subscr = s.link</span>
+<span class="code-line"><span class="code-keyword">WHERE</span> s.link = _f_subscr</span>
+<span class="code-line">  <span class="code-keyword">AND</span> b.d_date &lt;= _d_date</span></code></pre>
+          </div>
+          <div class="translation-english">
+            <span class="translation-label">PLAIN ENGLISH</span>
+            <div class="translation-lines">
+              <p class="tl">Начинаем с папки лицевых счетов (назовём её буквой s).</p>
+              <p class="tl">Приклеиваем к каждому счёту (b) строку, где владелец счёта совпадает с клиентом.</p>
+              <p class="tl">Оставляем только того клиента, которого попросили.</p>
+              <p class="tl">И только счета, выписанные не позже указанной даты.</p>
+            </div>
+          </div>
+        </div>
+        <div class="callout callout-accent">
+          <div class="callout-icon">💡</div>
+          <div class="callout-content">
+            <strong class="callout-title">Ключевая мысль</strong>
+            <p>JOIN — это не «слияние двух таблиц в одну навсегда», а взгляд на них рядом, только на время одного запроса. Исходные папки не меняются.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen animate-in">
+        <h2 class="screen-heading">Проверь себя</h2>
+        <div class="quiz-container" id="quiz-module3">
+          <div class="quiz-question-block"
+               data-correct="option-b"
+               data-explanation-right="Так и есть. JOIN соединяет строки двух таблиц по совпадающему ключу, не трогая сами таблицы."
+               data-explanation-wrong="JOIN не копирует таблицу целиком и не удаляет данные — он лишь подставляет подходящие строки рядом.">
+            <h3 class="quiz-question">Что на самом деле делает JOIN?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Создаёт копию одной таблицы внутри другой навсегда</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Подставляет подходящие строки второй таблицы рядом — только на время запроса</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Удаляет из базы всё, что не подошло по ключу</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-block"
+               data-correct="option-c"
+               data-explanation-right="Верно: условие b.f_subscr = s.link — это «клей», который связывает счёт с его владельцем."
+               data-explanation-wrong="Подумай, какая строчка в коде говорит базе, КАК именно сопоставлять строки.">
+            <h3 class="quiz-question">Что в коде выше связывает счёт с клиентом?</h3>
+            <div class="quiz-options">
+              <button class="quiz-option" data-value="option-a" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Строка WHERE s.link = _f_subscr</span>
+              </button>
+              <button class="quiz-option" data-value="option-b" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Строка AND b.d_date &lt;= _d_date</span>
+              </button>
+              <button class="quiz-option" data-value="option-c" onclick="selectOption(this)">
+                <div class="quiz-option-radio"></div>
+                <span>Условие ON b.f_subscr = s.link</span>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <button class="quiz-check-btn" onclick="checkQuiz('quiz-module3')">Проверить</button>
+          <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module3')">Сначала</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
